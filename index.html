@@ -1,0 +1,1307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Purchase Order Request — Immaculata-La Salle</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* ── VARIABLES ─────────────────────────────────────────────────── */
+  :root {
+    --green:       #134e2f;
+    --green-mid:   #1a6b3f;
+    --green-light: #e8f5ee;
+    --green-pale:  #f4faf7;
+    --gold:        #c49a1a;
+    --gold-light:  #fef9e7;
+    --red:         #dc2626;
+    --red-light:   #fef2f2;
+    --gray-50:     #f9fafb;
+    --gray-100:    #f3f4f6;
+    --gray-200:    #e5e7eb;
+    --gray-400:    #9ca3af;
+    --gray-600:    #4b5563;
+    --gray-800:    #1f2937;
+    --white:       #ffffff;
+    --shadow-sm:   0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.04);
+    --shadow-md:   0 4px 16px rgba(19,78,47,.10), 0 2px 6px rgba(0,0,0,.04);
+    --shadow-lg:   0 12px 40px rgba(19,78,47,.14), 0 4px 12px rgba(0,0,0,.06);
+    --radius:      12px;
+    --radius-sm:   8px;
+    --transition:  all .2s ease;
+  }
+
+  /* ── RESET ─────────────────────────────────────────────────────── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background: var(--gray-50);
+    color: var(--gray-800);
+    min-height: 100vh;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  /* ── HEADER ────────────────────────────────────────────────────── */
+  .site-header {
+    background: var(--green);
+    padding: 20px 24px 18px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    box-shadow: 0 2px 12px rgba(0,0,0,.18);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .header-crest {
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.12);
+    border: 2px solid rgba(196,154,26,.5);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Lora', serif;
+    font-size: 20px; font-weight: 700;
+    color: #facc15;
+    letter-spacing: -1px;
+    flex-shrink: 0;
+  }
+  .header-text {}
+  .header-school {
+    font-family: 'Lora', serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: #facc15;
+    letter-spacing: .3px;
+    line-height: 1.2;
+  }
+  .header-title {
+    font-size: 12px;
+    color: rgba(255,255,255,.7);
+    font-weight: 400;
+    letter-spacing: .5px;
+    text-transform: uppercase;
+  }
+
+  /* ── LAYOUT ────────────────────────────────────────────────────── */
+  .container {
+    max-width: 740px;
+    margin: 0 auto;
+    padding: 32px 16px 60px;
+  }
+
+  /* ── PROGRESS ──────────────────────────────────────────────────── */
+  .progress-wrap {
+    background: var(--white);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    margin-bottom: 24px;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--gray-200);
+  }
+  .progress-steps {
+    display: flex;
+    align-items: center;
+    gap: 0;
+  }
+  .step-pill {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+    position: relative;
+  }
+  .step-pill::after {
+    content: '';
+    flex: 1;
+    height: 2px;
+    background: var(--gray-200);
+    transition: background .3s ease;
+    margin: 0 4px;
+  }
+  .step-pill:last-child::after { display: none; }
+  .step-pill.done::after { background: var(--green); }
+  .step-num {
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    background: var(--gray-200);
+    color: var(--gray-600);
+    font-size: 13px;
+    font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    transition: var(--transition);
+    flex-shrink: 0;
+  }
+  .step-pill.active .step-num {
+    background: var(--green);
+    color: var(--white);
+    box-shadow: 0 0 0 4px rgba(19,78,47,.15);
+  }
+  .step-pill.done .step-num {
+    background: var(--green);
+    color: var(--white);
+  }
+  .step-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray-400);
+    transition: var(--transition);
+    white-space: nowrap;
+  }
+  .step-pill.active .step-label { color: var(--green); }
+  .step-pill.done .step-label { color: var(--green); }
+  @media (max-width: 500px) { .step-label { display: none; } }
+
+  /* ── CARDS / STEPS ─────────────────────────────────────────────── */
+  .form-step {
+    display: none;
+    animation: fadeIn .25s ease;
+  }
+  .form-step.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+  .card {
+    background: var(--white);
+    border-radius: var(--radius);
+    padding: 28px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--gray-200);
+  }
+  .card-title {
+    font-family: 'Lora', serif;
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--green);
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .card-title .icon {
+    width: 32px; height: 32px;
+    background: var(--green-light);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+  }
+  .card-sub {
+    font-size: 13px;
+    color: var(--gray-600);
+    margin-bottom: 24px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--gray-100);
+  }
+
+  /* ── FORM FIELDS ───────────────────────────────────────────────── */
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+  .field-row.single { grid-template-columns: 1fr; }
+  .field-row.thirds { grid-template-columns: 1fr 1fr 1fr; }
+  @media (max-width: 600px) {
+    .field-row, .field-row.thirds { grid-template-columns: 1fr; }
+  }
+
+  .field { display: flex; flex-direction: column; gap: 5px; }
+  .field label {
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--gray-600);
+    text-transform: uppercase;
+    letter-spacing: .5px;
+  }
+  .field label .req { color: var(--red); margin-left: 2px; }
+
+  .field input,
+  .field select,
+  .field textarea {
+    padding: 10px 13px;
+    border: 1.5px solid var(--gray-200);
+    border-radius: var(--radius-sm);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 14.5px;
+    color: var(--gray-800);
+    background: var(--white);
+    transition: var(--transition);
+    outline: none;
+    width: 100%;
+  }
+  .field input:focus,
+  .field select:focus,
+  .field textarea:focus {
+    border-color: var(--green);
+    box-shadow: 0 0 0 3px rgba(19,78,47,.1);
+  }
+  .field input.error,
+  .field select.error,
+  .field textarea.error {
+    border-color: var(--red);
+    box-shadow: 0 0 0 3px rgba(220,38,38,.08);
+  }
+  .field textarea { min-height: 100px; resize: vertical; }
+  .field .hint { font-size: 12px; color: var(--gray-400); }
+  .field .err-msg { font-size: 12px; color: var(--red); display: none; }
+  .field.has-error .err-msg { display: block; }
+
+  /* Currency fields */
+  .currency-wrap { position: relative; }
+  .currency-wrap input { padding-left: 28px; }
+  .currency-wrap::before {
+    content: '$';
+    position: absolute;
+    left: 12px; top: 50%;
+    transform: translateY(-50%);
+    color: var(--gray-400);
+    font-size: 14px;
+    font-weight: 600;
+    pointer-events: none;
+  }
+
+  /* Grand total display */
+  .grand-total-box {
+    background: var(--green);
+    border-radius: var(--radius-sm);
+    padding: 16px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 8px;
+  }
+  .grand-total-box .label {
+    font-size: 14px;
+    font-weight: 600;
+    color: rgba(255,255,255,.8);
+    text-transform: uppercase;
+    letter-spacing: .5px;
+  }
+  .grand-total-box .amount {
+    font-family: 'Lora', serif;
+    font-size: 26px;
+    font-weight: 700;
+    color: #facc15;
+  }
+
+  /* Searchable select wrapper */
+  .search-select-wrap { position: relative; }
+  .search-select-input {
+    cursor: pointer;
+    padding-right: 36px !important;
+  }
+  .search-select-arrow {
+    position: absolute;
+    right: 12px; top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: var(--gray-400);
+    font-size: 12px;
+    transition: transform .2s;
+  }
+  .search-select-dropdown {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0; right: 0;
+    background: var(--white);
+    border: 1.5px solid var(--green);
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-lg);
+    z-index: 200;
+    display: none;
+    overflow: hidden;
+    max-height: 300px;
+    flex-direction: column;
+  }
+  .search-select-dropdown.open { display: flex; }
+  .search-select-search {
+    padding: 10px 12px;
+    border: none;
+    border-bottom: 1px solid var(--gray-200);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 14px;
+    outline: none;
+    width: 100%;
+    color: var(--gray-800);
+  }
+  .search-select-list {
+    overflow-y: auto;
+    max-height: 240px;
+  }
+  .search-select-list .opt-group {
+    padding: 6px 12px 2px;
+    font-size: 10.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .7px;
+    color: var(--gray-400);
+    background: var(--gray-50);
+    border-top: 1px solid var(--gray-100);
+    position: sticky; top: 0;
+  }
+  .search-select-list .opt-group:first-child { border-top: none; }
+  .search-select-list .opt {
+    padding: 9px 14px;
+    font-size: 13.5px;
+    cursor: pointer;
+    transition: background .12s;
+    color: var(--gray-800);
+  }
+  .search-select-list .opt:hover, .search-select-list .opt.selected {
+    background: var(--green-light);
+    color: var(--green);
+  }
+  .search-select-list .opt.hidden { display: none; }
+
+  /* File upload */
+  .file-upload-zone {
+    border: 2px dashed var(--gray-200);
+    border-radius: var(--radius-sm);
+    padding: 28px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: var(--transition);
+    position: relative;
+    background: var(--gray-50);
+  }
+  .file-upload-zone:hover { border-color: var(--green); background: var(--green-pale); }
+  .file-upload-zone.has-file { border-color: var(--green); background: var(--green-light); }
+  .file-upload-zone input[type="file"] {
+    position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+  }
+  .file-upload-icon { font-size: 28px; margin-bottom: 8px; }
+  .file-upload-label { font-size: 14px; font-weight: 600; color: var(--gray-600); }
+  .file-upload-zone.has-file .file-upload-label { color: var(--green); }
+  .file-upload-hint { font-size: 12px; color: var(--gray-400); margin-top: 4px; }
+  .file-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--green);
+    margin-top: 6px;
+    display: none;
+  }
+  .file-upload-zone.has-file .file-name { display: block; }
+
+  /* Checkbox */
+  .check-wrap {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px;
+    background: var(--gold-light);
+    border: 1.5px solid #e8d080;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    margin-top: 4px;
+  }
+  .check-wrap input[type="checkbox"] {
+    width: 18px; height: 18px;
+    accent-color: var(--green);
+    cursor: pointer;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .check-wrap .check-text {
+    font-size: 13.5px;
+    color: var(--gray-800);
+    line-height: 1.5;
+  }
+  .check-wrap .check-text strong { color: var(--green); }
+
+  /* NAVIGATION BUTTONS */
+  .nav-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-top: 8px;
+  }
+  .btn {
+    padding: 12px 28px;
+    border-radius: var(--radius-sm);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 14.5px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    letter-spacing: .2px;
+  }
+  .btn-ghost {
+    background: var(--white);
+    color: var(--gray-600);
+    border: 1.5px solid var(--gray-200);
+  }
+  .btn-ghost:hover { background: var(--gray-50); border-color: var(--gray-400); }
+  .btn-primary {
+    background: var(--green);
+    color: var(--white);
+    box-shadow: 0 2px 8px rgba(19,78,47,.3);
+  }
+  .btn-primary:hover { background: var(--green-mid); box-shadow: 0 4px 14px rgba(19,78,47,.35); transform: translateY(-1px); }
+  .btn-primary:active { transform: translateY(0); }
+  .btn-submit {
+    background: var(--green);
+    color: var(--white);
+    font-size: 15px;
+    padding: 14px 36px;
+    box-shadow: 0 4px 16px rgba(19,78,47,.35);
+  }
+  .btn-submit:hover { background: var(--green-mid); transform: translateY(-1px); }
+  .btn-submit:disabled { opacity: .6; cursor: not-allowed; transform: none; }
+
+  /* ── REVIEW STEP ───────────────────────────────────────────────── */
+  .review-section-title {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .8px;
+    color: var(--gray-400);
+    margin: 20px 0 10px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--gray-100);
+  }
+  .review-section-title:first-child { margin-top: 0; }
+  .review-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 20px; }
+  @media (max-width: 500px) { .review-grid { grid-template-columns: 1fr; } }
+  .review-item {}
+  .review-item .ri-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    color: var(--gray-400);
+    margin-bottom: 2px;
+  }
+  .review-item .ri-value {
+    font-size: 14px;
+    color: var(--gray-800);
+    font-weight: 500;
+  }
+  .review-item.full { grid-column: 1 / -1; }
+  .review-total-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--gray-100);
+    font-size: 14px;
+  }
+  .review-total-row .tl { color: var(--gray-600); }
+  .review-total-row .tv { font-weight: 600; color: var(--gray-800); }
+  .review-grand-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 18px;
+    background: var(--green);
+    border-radius: var(--radius-sm);
+    margin-top: 8px;
+  }
+  .review-grand-row .tl { font-size: 14px; font-weight: 600; color: rgba(255,255,255,.8); text-transform: uppercase; letter-spacing: .5px; }
+  .review-grand-row .tv { font-family: 'Lora', serif; font-size: 24px; font-weight: 700; color: #facc15; }
+
+  /* ── SUCCESS SCREEN ────────────────────────────────────────────── */
+  #success-screen { display: none; animation: fadeIn .4s ease; }
+  .success-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    padding: 48px 32px;
+    text-align: center;
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--gray-200);
+  }
+  .success-icon {
+    width: 72px; height: 72px;
+    background: var(--green-light);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 24px;
+    font-size: 32px;
+  }
+  .success-po {
+    display: inline-block;
+    background: var(--green);
+    color: #facc15;
+    font-family: 'Lora', serif;
+    font-size: 20px;
+    font-weight: 700;
+    padding: 8px 20px;
+    border-radius: 6px;
+    margin: 16px 0 8px;
+    letter-spacing: .5px;
+  }
+  .success-title { font-family: 'Lora', serif; font-size: 28px; font-weight: 600; color: var(--green); margin-bottom: 12px; }
+  .success-sub { font-size: 15px; color: var(--gray-600); max-width: 400px; margin: 0 auto 32px; line-height: 1.6; }
+  .success-detail { font-size: 13px; color: var(--gray-400); }
+  .btn-new { margin-top: 24px; }
+
+  /* ── ERROR BANNER ──────────────────────────────────────────────── */
+  .error-banner {
+    background: var(--red-light);
+    border: 1.5px solid #f5c6c6;
+    border-radius: var(--radius-sm);
+    padding: 12px 16px;
+    font-size: 14px;
+    color: var(--red);
+    margin-bottom: 16px;
+    display: none;
+  }
+  .error-banner.show { display: block; }
+
+  /* Spinner */
+  .spinner {
+    width: 18px; height: 18px;
+    border: 2.5px solid rgba(255,255,255,.4);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin .7s linear infinite;
+    display: none;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .btn-submit.loading .spinner { display: block; }
+  .btn-submit.loading .btn-text { opacity: .7; }
+
+  /* ── DIVIDER ───────────────────────────────────────────────────── */
+  .divider { height: 1px; background: var(--gray-100); margin: 20px 0; }
+
+  /* Footer */
+  .form-footer {
+    text-align: center;
+    font-size: 12px;
+    color: var(--gray-400);
+    margin-top: 32px;
+  }
+</style>
+</head>
+<body>
+
+<!-- ──────────────────── HEADER ──────────────────── -->
+<header class="site-header">
+  <div class="header-crest">ILS</div>
+  <div class="header-text">
+    <div class="header-school">Immaculata-La Salle High School</div>
+    <div class="header-title">Purchase Order Request Portal</div>
+  </div>
+</header>
+
+<!-- ──────────────────── MAIN ──────────────────── -->
+<main class="container">
+
+  <!-- PROGRESS -->
+  <div class="progress-wrap" id="progress-wrap">
+    <div class="progress-steps">
+      <div class="step-pill active" id="spill-1">
+        <div class="step-num">1</div>
+        <span class="step-label">Request</span>
+      </div>
+      <div class="step-pill" id="spill-2">
+        <div class="step-num">2</div>
+        <span class="step-label">Vendor</span>
+      </div>
+      <div class="step-pill" id="spill-3">
+        <div class="step-num">3</div>
+        <span class="step-label">Order</span>
+      </div>
+      <div class="step-pill" id="spill-4">
+        <div class="step-num">4</div>
+        <span class="step-label">Review</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ERROR BANNER -->
+  <div class="error-banner" id="error-banner">⚠ There was an error submitting your request. Please try again or contact the Technology Department.</div>
+
+  <!-- ═══════════════════════ STEP 1 ═══════════════════════ -->
+  <div class="form-step active" id="step-1">
+    <div class="card">
+      <div class="card-title"><span class="icon">📋</span> Request Information</div>
+      <div class="card-sub">Basic details about who is submitting this purchase order.</div>
+
+      <div class="field-row">
+        <div class="field" id="f-dateOfRequest">
+          <label>Date of Request <span class="req">*</span></label>
+          <input type="date" id="dateOfRequest">
+          <span class="err-msg">Required</span>
+        </div>
+        <div class="field" id="f-dateRequired">
+          <label>Date Required <span class="req">*</span></label>
+          <input type="date" id="dateRequired">
+          <span class="err-msg">Required</span>
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field" id="f-requestedBy">
+          <label>Requested By <span class="req">*</span></label>
+          <input type="text" id="requestedBy" placeholder="Full name">
+          <span class="err-msg">Required</span>
+        </div>
+        <div class="field" id="f-email">
+          <label>Email Address <span class="req">*</span></label>
+          <input type="email" id="email" placeholder="you@ilsroyals.com">
+          <span class="err-msg">Valid email required</span>
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field" id="f-department">
+          <label>Department <span class="req">*</span></label>
+          <select id="department">
+            <option value="">— Select department —</option>
+            <option>Science Department</option>
+            <option>Mathematics Department</option>
+            <option>English Department</option>
+            <option>Social Studies Department</option>
+            <option>Foreign Languages Department</option>
+            <option>Business &amp; Technology Department</option>
+            <option>Health Sciences Department</option>
+            <option>Visual Arts Department</option>
+            <option>Performing Arts Department</option>
+            <option>Media &amp; Communications</option>
+            <option>Athletics Department</option>
+            <option>Student Life &amp; Leadership</option>
+            <option>Service &amp; Special Interest</option>
+            <option>Finance / Accounting</option>
+            <option>Facilities / Maintenance</option>
+            <option>Technology / IT</option>
+            <option>Health Services</option>
+            <option>Library Services</option>
+            <option>Development / Fundraising</option>
+          </select>
+          <span class="err-msg">Required</span>
+        </div>
+        <div class="field" id="f-financialAccount">
+          <label>Financial Account <span class="req">*</span></label>
+          <div class="search-select-wrap">
+            <input type="text" class="search-select-input" id="financialAccount-display" placeholder="Search accounts…" autocomplete="off" readonly>
+            <span class="search-select-arrow">▼</span>
+            <input type="hidden" id="financialAccount">
+            <div class="search-select-dropdown" id="fa-dropdown">
+              <input type="text" class="search-select-search" id="fa-search" placeholder="Type to search…">
+              <div class="search-select-list" id="fa-list"></div>
+            </div>
+          </div>
+          <span class="err-msg">Required</span>
+        </div>
+      </div>
+
+      <div class="nav-row">
+        <div></div>
+        <button class="btn btn-primary" onclick="goTo(2)">Next: Vendor Info →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════ STEP 2 ═══════════════════════ -->
+  <div class="form-step" id="step-2">
+    <div class="card">
+      <div class="card-title"><span class="icon">🏢</span> Vendor Information</div>
+      <div class="card-sub">Who are you purchasing from? Fill in the vendor's details.</div>
+
+      <div class="field-row">
+        <div class="field" id="f-vendor">
+          <label>Payable To / Vendor Name <span class="req">*</span></label>
+          <input type="text" id="vendor" placeholder="Company name">
+          <span class="err-msg">Required</span>
+        </div>
+        <div class="field" id="f-quoteNumber">
+          <label>Quote Number</label>
+          <input type="text" id="quoteNumber" placeholder="e.g. Q-12345">
+        </div>
+      </div>
+
+      <div class="field-row single">
+        <div class="field" id="f-vendorAddress">
+          <label>Vendor Street Address <span class="req">*</span></label>
+          <input type="text" id="vendorAddress" placeholder="Street address">
+          <span class="err-msg">Required</span>
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field" id="f-cityStateZip">
+          <label>City, State, ZIP <span class="req">*</span></label>
+          <input type="text" id="cityStateZip" placeholder="Miami, FL 33133">
+          <span class="err-msg">Required</span>
+        </div>
+        <div class="field" id="f-stockNumber">
+          <label>Stock Number(s)</label>
+          <input type="text" id="stockNumber" placeholder="Optional">
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field" id="f-terms">
+          <label>Payment Terms <span class="req">*</span></label>
+          <select id="terms">
+            <option value="">— Select terms —</option>
+            <option>Net 15</option>
+            <option>Net 30</option>
+            <option>Net 60</option>
+            <option>Net 90</option>
+            <option>Due on Receipt</option>
+          </select>
+          <span class="err-msg">Required</span>
+        </div>
+        <div class="field">
+          <label>Ship To</label>
+          <input type="text" value="Immaculata-La Salle High School, 3601 S. Miami Ave, Miami FL 33133" readonly style="background:var(--gray-50);color:var(--gray-600);font-size:13px;">
+        </div>
+      </div>
+
+      <div class="nav-row">
+        <button class="btn btn-ghost" onclick="goTo(1)">← Back</button>
+        <button class="btn btn-primary" onclick="goTo(3)">Next: Order Details →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════ STEP 3 ═══════════════════════ -->
+  <div class="form-step" id="step-3">
+    <div class="card">
+      <div class="card-title"><span class="icon">📦</span> Order Details</div>
+      <div class="card-sub">Describe what you're ordering and the costs involved.</div>
+
+      <div class="field-row single">
+        <div class="field" id="f-orderDescription">
+          <label>Order Description <span class="req">*</span> <span class="hint">— be specific about items, quantities, and purpose</span></label>
+          <textarea id="orderDescription" placeholder="e.g. 10x MacBook Air 13-inch (M3) for the computer lab refresh. Includes Apple Care+ for each unit."></textarea>
+          <span class="err-msg">Required</span>
+        </div>
+      </div>
+
+      <div class="field-row thirds">
+        <div class="field" id="f-subtotal">
+          <label>Subtotal (Items) <span class="req">*</span></label>
+          <div class="currency-wrap">
+            <input type="number" id="subtotal" placeholder="0.00" min="0" step="0.01" oninput="calcTotal()">
+          </div>
+          <span class="err-msg">Required</span>
+        </div>
+        <div class="field">
+          <label>Shipping &amp; Handling</label>
+          <div class="currency-wrap">
+            <input type="number" id="shippingCost" placeholder="0.00" min="0" step="0.01" oninput="calcTotal()">
+          </div>
+        </div>
+        <div class="field">
+          <label>Additional Charges</label>
+          <div class="currency-wrap">
+            <input type="number" id="additionalCharges" placeholder="0.00" min="0" step="0.01" oninput="calcTotal()">
+          </div>
+        </div>
+      </div>
+
+      <div class="grand-total-box">
+        <span class="label">Grand Total</span>
+        <span class="amount" id="grandTotalDisplay">$0.00</span>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="field-row single">
+        <div class="field" id="f-supportingDoc">
+          <label>Supporting Document <span class="req">*</span> <span class="hint">— PDF only</span></label>
+          <div class="file-upload-zone" id="file-zone">
+            <input type="file" id="supportingDoc" accept=".pdf,application/pdf" onchange="handleFile(this)">
+            <div class="file-upload-icon">📎</div>
+            <div class="file-upload-label">Click to upload or drag & drop</div>
+            <div class="file-upload-hint">PDF files only · Max 10MB</div>
+            <div class="file-name" id="file-name-display"></div>
+          </div>
+          <span class="err-msg">A supporting PDF document is required</span>
+        </div>
+      </div>
+
+      <div class="nav-row">
+        <button class="btn btn-ghost" onclick="goTo(2)">← Back</button>
+        <button class="btn btn-primary" onclick="goTo(4)">Next: Review →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════ STEP 4 ═══════════════════════ -->
+  <div class="form-step" id="step-4">
+    <div class="card">
+      <div class="card-title"><span class="icon">✅</span> Review &amp; Submit</div>
+      <div class="card-sub">Please review your purchase order details before submitting. Once submitted it will go to Finance for approval.</div>
+
+      <div id="review-content"><!-- populated by JS --></div>
+
+      <div class="divider"></div>
+
+      <div class="field-row single">
+        <div class="field" id="f-taxCert">
+          <label>Tax Exemption Certification <span class="req">*</span></label>
+          <label class="check-wrap">
+            <input type="checkbox" id="taxCert">
+            <span class="check-text">I certify that I have provided the <strong>Tax Exemption Certificate</strong> to the vendor prior to submitting this purchase order.</span>
+          </label>
+          <span class="err-msg">You must certify the tax exemption before submitting</span>
+        </div>
+      </div>
+
+      <div class="nav-row">
+        <button class="btn btn-ghost" onclick="goTo(3)">← Back</button>
+        <button class="btn btn-primary btn-submit" id="submit-btn" onclick="submitForm()">
+          <div class="spinner" id="spinner"></div>
+          <span class="btn-text">Submit Purchase Order</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════ SUCCESS ═══════════════════════ -->
+  <div id="success-screen">
+    <div class="success-card">
+      <div class="success-icon">🎉</div>
+      <div class="success-title">Purchase Order Submitted!</div>
+      <div class="success-po" id="success-po-number">Generating PO number…</div>
+      <div class="success-sub">Your request has been received and sent to Finance for approval. You'll get an email confirmation shortly, and a second email once it's been reviewed.</div>
+      <div class="success-detail">Approvers: Marlen Medina &amp; Katya Ore · Finance Department</div>
+      <button class="btn btn-primary btn-new" onclick="resetForm()">Submit Another PO</button>
+    </div>
+  </div>
+
+  <div class="form-footer">
+    Immaculata-La Salle High School · Technology Department · Powered by Microsoft Power Automate
+  </div>
+</main>
+
+<script>
+// ─────────────────────────────────────────────────────────────────
+// CONFIGURATION — paste your Power Automate HTTP trigger URL here
+// ─────────────────────────────────────────────────────────────────
+const POWER_AUTOMATE_URL = "YOUR_POWER_AUTOMATE_HTTP_TRIGGER_URL_HERE";
+
+// ─────────────────────────────────────────────────────────────────
+// FINANCIAL ACCOUNTS (grouped)
+// ─────────────────────────────────────────────────────────────────
+const FA_GROUPS = {
+  "Financial Accounts": [
+    "Checking Account – Special","Home & School Bank Account","Petty Cash",
+    "Regular Savings","Archdiocese Education Fund – Corpus",
+    "Capital Maintenance (1-Year)","Insurance Reserve (1-Year)",
+    "Prepaid Tuition/Registration (1-Year)","Prepaid Expenses","Prepaid Tuition",
+    "Payroll Taxes Payable","Health and Life Insurance Payable",
+    "Net Wages Payable","Other Accounts Payable",
+    "Unrestricted Net Assets","Permanently Restricted Net Assets",
+    "Loan – Archdiocese of Miami",
+  ],
+  "Assets & Facilities": [
+    "Land – Main Site","Buildings and Permanent Structures",
+    "Furnishings, Equipment, and Vehicles","Library Books – Initial Purchase",
+    "Arti-Grass","Ernie Renella Fund",
+  ],
+  "Academic Departments": [
+    "Science Department","Mathematics Department","English Department",
+    "Social Studies Department","Foreign Languages Department",
+    "Business & Technology Department","Health Sciences Department",
+    "Visual Arts Department","Performing Arts Department",
+    "Media & Communications","Athletics Department",
+    "Student Life & Leadership","Service & Special Interest",
+    "Finance / Accounting","Facilities / Maintenance","Technology / IT",
+    "Health Services","Library Services","Development / Fundraising",
+    "iPad Fines / Buyout","Summer Reading",
+  ],
+  "Honor Societies & Academic Clubs": [
+    "National Honor Society","National English Honor Society",
+    "National Science Honor Society","National Technical Honor Society",
+    "French Honor Society","Spanish Honor Society","Rho Kappa Honor Society",
+    "Mu Alpha Theta","Key Club","Student Government","Student Activities Council",
+    "Future Business Leaders","HOSA – Future Health Professionals",
+    "Robotics – Bosco Bots","Ambassadors Club","Civic Leaders Club",
+    "Pro-Life Club","Environmental Club","Latin American Culture Club",
+    "Close-Up Club","RADAR – Animal Rights","Relay for Life","S.A.L.T.T.",
+    "Marine Biology","Photography","LTV Studio","Speech & Debate",
+    "Drama Club","Dance Team","Fashion Club","Purple Hearts",
+    "Student Club #48","Student Club #51",
+  ],
+  "Athletics & Sports": [
+    "Athletic Club","Athletic Equipment","Other Athletic Expenditures",
+    "Travel Athletics","Rental Expense -Athletics Facilities",
+    "Girls Basketball","Boys Basketball","Boys Soccer","Girls Soccer",
+    "Girls Softball","Girls Volleyball","Baseball","Cross Country",
+    "Track & Field","Tennis","Swimming Team","Lacrosse Team",
+    "Cheerleaders","Football Booster","Missions Fundraising","Leadership Retreat",
+  ],
+  "Student Classes": [
+    "Class of 2026","Class of 2027","Class of 2028","Class of 2029",
+  ],
+};
+
+// ─────────────────────────────────────────────────────────────────
+// INIT
+// ─────────────────────────────────────────────────────────────────
+let currentStep = 1;
+let fileBase64 = null;
+let fileName = null;
+
+document.addEventListener('DOMContentLoaded', () => {
+  // Set today's date
+  const today = new Date().toISOString().slice(0, 10);
+  document.getElementById('dateOfRequest').value = today;
+
+  buildFADropdown();
+  setupFADropdown();
+});
+
+// ─────────────────────────────────────────────────────────────────
+// FINANCIAL ACCOUNT SEARCHABLE DROPDOWN
+// ─────────────────────────────────────────────────────────────────
+function buildFADropdown() {
+  const list = document.getElementById('fa-list');
+  list.innerHTML = '';
+  for (const [group, items] of Object.entries(FA_GROUPS)) {
+    const g = document.createElement('div');
+    g.className = 'opt-group';
+    g.textContent = group;
+    list.appendChild(g);
+    items.forEach(item => {
+      const o = document.createElement('div');
+      o.className = 'opt';
+      o.textContent = item;
+      o.dataset.value = item;
+      o.addEventListener('mousedown', e => {
+        e.preventDefault();
+        selectFA(item);
+      });
+      list.appendChild(o);
+    });
+  }
+}
+
+function setupFADropdown() {
+  const display = document.getElementById('financialAccount-display');
+  const dropdown = document.getElementById('fa-dropdown');
+  const search = document.getElementById('fa-search');
+
+  display.addEventListener('click', () => {
+    dropdown.classList.toggle('open');
+    if (dropdown.classList.contains('open')) {
+      search.value = '';
+      filterFA('');
+      setTimeout(() => search.focus(), 50);
+    }
+  });
+
+  search.addEventListener('input', () => filterFA(search.value));
+
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.search-select-wrap')) {
+      dropdown.classList.remove('open');
+    }
+  });
+}
+
+function filterFA(query) {
+  const q = query.toLowerCase();
+  const list = document.getElementById('fa-list');
+  list.querySelectorAll('.opt').forEach(o => {
+    o.classList.toggle('hidden', !o.textContent.toLowerCase().includes(q));
+  });
+  list.querySelectorAll('.opt-group').forEach(g => {
+    let next = g.nextElementSibling;
+    let allHidden = true;
+    while (next && !next.classList.contains('opt-group')) {
+      if (!next.classList.contains('hidden')) allHidden = false;
+      next = next.nextElementSibling;
+    }
+    g.style.display = allHidden ? 'none' : '';
+  });
+}
+
+function selectFA(value) {
+  document.getElementById('financialAccount').value = value;
+  document.getElementById('financialAccount-display').value = value;
+  document.getElementById('fa-dropdown').classList.remove('open');
+  document.getElementById('f-financialAccount').classList.remove('has-error');
+}
+
+// ─────────────────────────────────────────────────────────────────
+// GRAND TOTAL CALCULATOR
+// ─────────────────────────────────────────────────────────────────
+function calcTotal() {
+  const sub = parseFloat(document.getElementById('subtotal').value) || 0;
+  const sh  = parseFloat(document.getElementById('shippingCost').value) || 0;
+  const add = parseFloat(document.getElementById('additionalCharges').value) || 0;
+  const total = sub + sh + add;
+  document.getElementById('grandTotalDisplay').textContent = '$' + total.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+}
+
+// ─────────────────────────────────────────────────────────────────
+// FILE UPLOAD
+// ─────────────────────────────────────────────────────────────────
+function handleFile(input) {
+  const file = input.files[0];
+  if (!file) return;
+  if (file.size > 10 * 1024 * 1024) {
+    alert('File is too large. Please upload a PDF under 10MB.');
+    input.value = '';
+    return;
+  }
+  fileName = file.name;
+  document.getElementById('file-name-display').textContent = '📄 ' + file.name;
+  document.getElementById('file-zone').classList.add('has-file');
+  document.getElementById('f-supportingDoc').classList.remove('has-error');
+
+  const reader = new FileReader();
+  reader.onload = e => {
+    fileBase64 = e.target.result.split(',')[1];
+  };
+  reader.readAsDataURL(file);
+}
+
+// ─────────────────────────────────────────────────────────────────
+// VALIDATION
+// ─────────────────────────────────────────────────────────────────
+function validate(step) {
+  let valid = true;
+
+  const required = {
+    1: ['dateOfRequest','dateRequired','requestedBy','email','department','financialAccount'],
+    2: ['vendor','vendorAddress','cityStateZip','terms'],
+    3: ['orderDescription','subtotal'],
+    4: [],
+  };
+
+  required[step].forEach(id => {
+    const el = document.getElementById(id);
+    const wrap = document.getElementById('f-' + id);
+    if (!el || !wrap) return;
+    const val = el.value.trim();
+    if (!val) {
+      wrap.classList.add('has-error');
+      el.classList.add('error');
+      valid = false;
+    } else {
+      wrap.classList.remove('has-error');
+      el.classList.remove('error');
+    }
+  });
+
+  // Email format
+  if (step === 1) {
+    const emailEl = document.getElementById('email');
+    const emailWrap = document.getElementById('f-email');
+    if (emailEl.value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailEl.value)) {
+      emailWrap.classList.add('has-error');
+      emailEl.classList.add('error');
+      valid = false;
+    }
+  }
+
+  // File required on step 3
+  if (step === 3 && !fileBase64) {
+    document.getElementById('f-supportingDoc').classList.add('has-error');
+    valid = false;
+  }
+
+  // Tax cert on step 4
+  if (step === 4) {
+    const cb = document.getElementById('taxCert');
+    const wrap = document.getElementById('f-taxCert');
+    if (!cb.checked) {
+      wrap.classList.add('has-error');
+      valid = false;
+    } else {
+      wrap.classList.remove('has-error');
+    }
+  }
+
+  return valid;
+}
+
+// ─────────────────────────────────────────────────────────────────
+// STEP NAVIGATION
+// ─────────────────────────────────────────────────────────────────
+function goTo(step) {
+  if (step > currentStep && !validate(currentStep)) return;
+
+  document.getElementById('step-' + currentStep).classList.remove('active');
+  document.getElementById('spill-' + currentStep).classList.remove('active');
+  if (step > currentStep) {
+    document.getElementById('spill-' + currentStep).classList.add('done');
+  } else {
+    document.getElementById('spill-' + (step)).classList.remove('done');
+  }
+
+  currentStep = step;
+  document.getElementById('step-' + currentStep).classList.add('active');
+  document.getElementById('spill-' + currentStep).classList.add('active');
+
+  if (step === 4) buildReview();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ─────────────────────────────────────────────────────────────────
+// BUILD REVIEW
+// ─────────────────────────────────────────────────────────────────
+function v(id) {
+  const el = document.getElementById(id);
+  return el ? (el.value || '—') : '—';
+}
+function curr(id) {
+  const val = parseFloat(document.getElementById(id)?.value) || 0;
+  return '$' + val.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
+}
+
+function buildReview() {
+  const sub = parseFloat(document.getElementById('subtotal').value) || 0;
+  const sh  = parseFloat(document.getElementById('shippingCost').value) || 0;
+  const add = parseFloat(document.getElementById('additionalCharges').value) || 0;
+  const grand = sub + sh + add;
+  const grandFmt = '$' + grand.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
+
+  document.getElementById('review-content').innerHTML = `
+    <div class="review-section-title">Request Details</div>
+    <div class="review-grid">
+      <div class="review-item"><div class="ri-label">Date of Request</div><div class="ri-value">${v('dateOfRequest')}</div></div>
+      <div class="review-item"><div class="ri-label">Date Required</div><div class="ri-value">${v('dateRequired')}</div></div>
+      <div class="review-item"><div class="ri-label">Requested By</div><div class="ri-value">${v('requestedBy')}</div></div>
+      <div class="review-item"><div class="ri-label">Email</div><div class="ri-value">${v('email')}</div></div>
+      <div class="review-item"><div class="ri-label">Department</div><div class="ri-value">${v('department')}</div></div>
+      <div class="review-item"><div class="ri-label">Financial Account</div><div class="ri-value">${v('financialAccount')}</div></div>
+    </div>
+
+    <div class="review-section-title">Vendor Details</div>
+    <div class="review-grid">
+      <div class="review-item"><div class="ri-label">Vendor</div><div class="ri-value">${v('vendor')}</div></div>
+      <div class="review-item"><div class="ri-label">Quote Number</div><div class="ri-value">${v('quoteNumber')}</div></div>
+      <div class="review-item full"><div class="ri-label">Address</div><div class="ri-value">${v('vendorAddress')}, ${v('cityStateZip')}</div></div>
+      <div class="review-item"><div class="ri-label">Payment Terms</div><div class="ri-value">${v('terms')}</div></div>
+      <div class="review-item"><div class="ri-label">Stock Number</div><div class="ri-value">${v('stockNumber')}</div></div>
+    </div>
+
+    <div class="review-section-title">Order Details</div>
+    <div class="review-grid">
+      <div class="review-item full"><div class="ri-label">Description</div><div class="ri-value">${v('orderDescription')}</div></div>
+      <div class="review-item"><div class="ri-label">Supporting Doc</div><div class="ri-value">${fileName ? '📄 ' + fileName : '—'}</div></div>
+    </div>
+
+    <div class="review-section-title">Cost Summary</div>
+    <div class="review-total-row"><span class="tl">Subtotal (Items)</span><span class="tv">${curr('subtotal')}</span></div>
+    <div class="review-total-row"><span class="tl">Shipping &amp; Handling</span><span class="tv">${curr('shippingCost')}</span></div>
+    <div class="review-total-row"><span class="tl">Additional Charges</span><span class="tv">${curr('additionalCharges')}</span></div>
+    <div class="review-grand-row"><span class="tl">Grand Total</span><span class="tv">${grandFmt}</span></div>
+  `;
+}
+
+// ─────────────────────────────────────────────────────────────────
+// SUBMIT
+// ─────────────────────────────────────────────────────────────────
+async function submitForm() {
+  if (!validate(4)) return;
+
+  const sub   = parseFloat(document.getElementById('subtotal').value) || 0;
+  const sh    = parseFloat(document.getElementById('shippingCost').value) || 0;
+  const add   = parseFloat(document.getElementById('additionalCharges').value) || 0;
+  const grand = sub + sh + add;
+
+  const payload = {
+    dateOfRequest:      v('dateOfRequest'),
+    requestedBy:        v('requestedBy'),
+    email:              v('email'),
+    department:         v('department'),
+    financialAccount:   v('financialAccount'),
+    dateRequired:       v('dateRequired'),
+    vendor:             v('vendor'),
+    vendorAddress:      v('vendorAddress'),
+    cityStateZip:       v('cityStateZip'),
+    quoteNumber:        v('quoteNumber'),
+    terms:              v('terms'),
+    stockNumber:        v('stockNumber'),
+    orderDescription:   v('orderDescription'),
+    subtotal:           sub,
+    shippingCost:       sh,
+    additionalCharges:  add,
+    grandTotal:         grand,
+    taxExemptCertified: true,
+    fileName:           fileName || '',
+    fileBase64:         fileBase64 || '',
+  };
+
+  const btn = document.getElementById('submit-btn');
+  btn.disabled = true;
+  btn.classList.add('loading');
+  document.getElementById('error-banner').classList.remove('show');
+
+  try {
+    // If URL is not configured, simulate for demo
+    if (POWER_AUTOMATE_URL === "YOUR_POWER_AUTOMATE_HTTP_TRIGGER_URL_HERE") {
+      await new Promise(r => setTimeout(r, 1800)); // demo delay
+      showSuccess("Demo Mode — PO-2026-XXXXX");
+      return;
+    }
+
+    const res = await fetch(POWER_AUTOMATE_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+
+    let poNumber = 'Pending';
+    try {
+      const data = await res.json();
+      if (data.poNumber) poNumber = data.poNumber;
+    } catch(_) {}
+
+    showSuccess(poNumber);
+  } catch (err) {
+    console.error(err);
+    document.getElementById('error-banner').classList.add('show');
+    btn.disabled = false;
+    btn.classList.remove('loading');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+}
+
+function showSuccess(poNumber) {
+  document.getElementById('progress-wrap').style.display = 'none';
+  document.querySelectorAll('.form-step').forEach(s => s.style.display = 'none');
+  document.getElementById('success-po-number').textContent = poNumber;
+  document.getElementById('success-screen').style.display = 'block';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function resetForm() {
+  document.getElementById('success-screen').style.display = 'none';
+  document.getElementById('progress-wrap').style.display = '';
+  document.querySelectorAll('.form-step').forEach(s => s.style.display = '');
+  document.querySelector('form') && document.querySelector('form').reset();
+  // Reset all inputs manually
+  ['dateOfRequest','dateRequired','requestedBy','email','department',
+   'financialAccount','vendor','quoteNumber','vendorAddress','cityStateZip',
+   'stockNumber','terms','orderDescription','subtotal','shippingCost',
+   'additionalCharges'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  document.getElementById('financialAccount-display').value = '';
+  document.getElementById('taxCert').checked = false;
+  document.getElementById('grandTotalDisplay').textContent = '$0.00';
+  document.getElementById('file-zone').classList.remove('has-file');
+  document.getElementById('file-name-display').textContent = '';
+  fileBase64 = null; fileName = null;
+  const today = new Date().toISOString().slice(0,10);
+  document.getElementById('dateOfRequest').value = today;
+
+  // Reset steps
+  currentStep = 1;
+  for (let i = 1; i <= 4; i++) {
+    document.getElementById('step-'+i).classList.remove('active');
+    document.getElementById('spill-'+i).classList.remove('active','done');
+  }
+  document.getElementById('step-1').classList.add('active');
+  document.getElementById('spill-1').classList.add('active');
+  document.getElementById('submit-btn').disabled = false;
+  document.getElementById('submit-btn').classList.remove('loading');
+}
+</script>
+</body>
+</html>
