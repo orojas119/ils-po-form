@@ -467,7 +467,7 @@ function renderAll(){
 }
 
 function renderHero(){
-  const t=filteredPOs.reduce((s,p)=>s+p.grandTotal,0);
+  const t=filteredPOs.filter(p=>p.approved).reduce((s,p)=>s+p.grandTotal,0);
   document.getElementById('hero-amount').textContent=fmt(t);
   document.getElementById('hero-change').textContent=`${filteredPOs.length} purchase order${filteredPOs.length!==1?'s':''}`;
   document.getElementById('hero-period-label').textContent=getPeriodLabel(currentPeriod);
@@ -477,7 +477,7 @@ function renderChart(){
   const canvas=document.getElementById('spending-chart'),ctx=canvas.getContext('2d');
   const{start,end}=getPeriodDates(currentPeriod);
   const days=[];const d=new Date(start);while(d<=end){days.push(new Date(d));d.setDate(d.getDate()+1);}
-  const sorted=[...filteredPOs].sort((a,b)=>new Date(a.createdDate)-new Date(b.createdDate));
+  const sorted=[...filteredPOs.filter(p=>p.approved)].sort((a,b)=>new Date(a.createdDate)-new Date(b.createdDate));
   let run=0;const labels=[],values=[];
   days.forEach(day=>{
     const de=new Date(day);de.setHours(23,59,59,999);
@@ -491,7 +491,7 @@ function renderChart(){
 }
 
 function renderKPIs(){
-  const t=filteredPOs.reduce((s,p)=>s+p.grandTotal,0);
+  const t=filteredPOs.filter(p=>p.approved).reduce((s,p)=>s+p.grandTotal,0);
   document.getElementById('kpi-total').textContent=fmt(t);
   document.getElementById('kpi-submitted').textContent=filteredPOs.length;
   document.getElementById('kpi-approved').textContent=filteredPOs.filter(p=>p.approved).length;
@@ -499,7 +499,7 @@ function renderKPIs(){
 }
 
 function renderDeptChart(){
-  const map={};filteredPOs.forEach(p=>{const d=p.department||'Unknown';map[d]=(map[d]||0)+p.grandTotal;});
+  const map={};filteredPOs.filter(p=>p.approved).forEach(p=>{const d=p.department||'Unknown';map[d]=(map[d]||0)+p.grandTotal;});
   const sorted=Object.entries(map).sort((a,b)=>b[1]-a[1]).slice(0,8);
   const canvas=document.getElementById('dept-chart');
   if(deptChart)deptChart.destroy();
@@ -508,7 +508,7 @@ function renderDeptChart(){
 }
 
 function renderVendors(){
-  const map={};filteredPOs.forEach(p=>{const v=p.vendor||'Unknown';map[v]=(map[v]||0)+p.grandTotal;});
+  const map={};filteredPOs.filter(p=>p.approved).forEach(p=>{const v=p.vendor||'Unknown';map[v]=(map[v]||0)+p.grandTotal;});
   const sorted=Object.entries(map).sort((a,b)=>b[1]-a[1]).slice(0,6);
   const el=document.getElementById('vendor-list');
   if(!sorted.length){el.innerHTML='<div style="font-size:13px;color:var(--gray-400);padding:8px 0;">No data for this period</div>';return;}
