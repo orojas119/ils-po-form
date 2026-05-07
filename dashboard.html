@@ -591,19 +591,47 @@ function handleModalClick(e){if(e.target===document.getElementById('po-modal'))c
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
 
 async function loadAttachment(itemId){
-  const area=document.getElementById('attachment-area');
-  area.innerHTML='<div class="attachment-loading"><div class="attachment-spinner"></div><span>Loading attachment…</span></div>';
-  try{
-    const tok=await msalInstance.acquireTokenSilent({...GRAPH_REQUEST,account:currentAccount});
-    const res=await fetch(`${SP_BASE}/items/${itemId}/attachments`,{headers:{Authorization:`Bearer ${tok.accessToken}`}});
-    const data=await res.json();
-    const atts=data.value||[];
-    if(!atts.length){area.innerHTML='<p class="no-attachment">📭 No supporting document attached to this PO.</p>';return;}
-    area.innerHTML=atts.map(a=>`<div class="attachment-box"><div class="attachment-icon">📄</div><div class="attachment-info"><div class="attachment-name">${a.name}</div><div class="attachment-sub">Supporting document</div></div><button class="btn-view-doc" onclick="viewDoc('${encodeURIComponent(a.contentUrl||'')}')">View / Download</button></div>`).join('');
-  }catch(err){
-    console.error(err);
-    area.innerHTML='<p class="no-attachment">⚠ Could not load attachment. <a href="https://ilsroyals.sharepoint.com/sites/ilsforms/Lists/Purchase%20Order%20List" target="_blank" style="color:var(--green);font-weight:600;">View in SharePoint →</a></p>';
+  var area=document.getElementById("attachment-area");
+  area.innerHTML='<div class="attachment-loading"><div class="attachment-spinner"></div><span>Loading document...</span></div>';
+  var spId=currentModalPO&&currentModalPO.spId?currentModalPO.spId:0;
+  var spBase="https://ilsroyals.sharepoint.com/sites/ilsforms";
+  var listId="9616e550-b144-445a-8659-3f362d489cf4";
+  var dispUrl=spId?spBase+"/Lists/Purchase%20Order%20List/DispForm.aspx?ID="+spId:spBase+"/Lists/Purchase%20Order%20List";
+  function fallback(){
+    area.innerHTML='<div class="attachment-box" style="cursor:default;"><div class="attachment-icon">&#128194;</div><div class="attachment-info"><div class="attachment-name">Supporting Document</div><div class="attachment-sub">Click to view this PO and its attachments in SharePoint</div></div><a href="'+dispUrl+'" target="_blank" class="btn-view-doc">Open in SharePoint</a></div>';
   }
+  if(!spId){fallback();return;}
+  msalInstance.acquireTokenSilent({scopes:GRAPH_REQUEST.scopes,account:currentAccount})
+  .then(function(tok){
+    var h={Authorization:"Bearer "+tok.accessToken};
+    // Step 1: Resolve actual site ID (path notation returns 400 on /attachments)
+    return fetch("https://graph.microsoft.com/v1.0/sites/ilsroyals.sharepoint.com:/sites/ilsforms",{headers:h})
+    .then(function(r){return r.json();})
+    .then(function(site){
+      var siteId=site.id;
+      if(!siteId)return Promise.reject("no site id");
+      // Step 2: Use resolved site ID for attachments endpoint
+      var url="https://graph.microsoft.com/v1.0/sites/"+siteId+"/lists/"+listId+"/items/"+itemId+"/attachments";
+      return fetch(url,{headers:h});
+    })
+    .then(function(r){
+      if(!r.ok)return Promise.reject("att "+r.status);
+      return r.json();
+    })
+    .then(function(d){
+      var atts=d.value||[];
+      if(!atts.length){fallback();return;}
+      area.innerHTML=atts.map(function(a){
+        var fileUrl=a.contentUrl||dispUrl;
+        var nm=a.name||"Supporting Document";
+        return '<div class="attachment-box"><div class="attachment-icon">&#128196;</div><div class="attachment-info"><div class="attachment-name">'+nm+'</div><div class="attachment-sub">Click to view or download</div></div><a href="'+fileUrl+'" target="_blank" class="btn-view-doc">View / Download</a></div>';
+      }).join("");
+    });
+  })
+  .catch(function(err){
+    console.error("Attachment error:",err);
+    fallback();
+  });
 }
 
 function viewDoc(encoded){
