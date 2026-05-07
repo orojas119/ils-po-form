@@ -208,7 +208,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--gray-50);color:
       <div class="header-title">Finance Dashboard</div>
     </div>
     <div class="header-right">
-      <a href="https://po.ilsroyals.com/" class="header-link">← PO Form</a>
+      <a href="https://po.ilsroyals.com/" class="header-link">&#8592; PO Form</a>
       <span class="user-name-sm" id="header-name"></span>
       <div class="user-avatar" id="header-avatar">?</div>
       <button class="header-link" onclick="signOut()">Sign out</button>
@@ -217,13 +217,13 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--gray-50);color:
 
   <main class="container">
     <div class="error-banner" id="error-banner">
-      ⚠ Could not load SharePoint data. Make sure <strong>Sites.Read.All</strong> permission is granted in Azure AD.
-      <a href="https://portal.azure.com" target="_blank"> Open Azure Portal →</a>
+      &#9888; Could not load SharePoint data. Make sure <strong>Sites.Read.All</strong> permission is granted in Azure AD.
+      <a href="https://portal.azure.com" target="_blank"> Open Azure Portal &#8594;</a>
     </div>
 
     <div class="hero">
       <div class="hero-label">Total Purchase Order Spending</div>
-      <div class="hero-amount" id="hero-amount">—</div>
+      <div class="hero-amount" id="hero-amount">&#8212;</div>
       <div class="hero-meta">
         <span class="hero-change" id="hero-change"></span>
         <span class="hero-period-label" id="hero-period-label"></span>
@@ -246,22 +246,22 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--gray-50);color:
         <canvas id="spending-chart"></canvas>
         <div class="data-loading" id="chart-loading">
           <div class="data-loading-spinner"></div>
-          <p>Loading purchase order data…</p>
+          <p>Loading purchase order data&#8230;</p>
         </div>
       </div>
     </div>
 
     <div class="kpi-grid">
-      <div class="kpi-card"><div class="kpi-icon green">💰</div><div class="kpi-value" id="kpi-total">—</div><div class="kpi-label">Total Spent</div></div>
-      <div class="kpi-card"><div class="kpi-icon gold">📋</div><div class="kpi-value" id="kpi-submitted">—</div><div class="kpi-label">POs Submitted</div></div>
-      <div class="kpi-card"><div class="kpi-icon blue">✅</div><div class="kpi-value" id="kpi-approved">—</div><div class="kpi-label">Approved</div></div>
-      <div class="kpi-card"><div class="kpi-icon orange">⏳</div><div class="kpi-value" id="kpi-pending">—</div><div class="kpi-label">Pending Approval</div></div>
+      <div class="kpi-card"><div class="kpi-icon green">&#128176;</div><div class="kpi-value" id="kpi-total">&#8212;</div><div class="kpi-label">Total Spent</div></div>
+      <div class="kpi-card"><div class="kpi-icon gold">&#128203;</div><div class="kpi-value" id="kpi-submitted">&#8212;</div><div class="kpi-label">POs Submitted</div></div>
+      <div class="kpi-card"><div class="kpi-icon blue">&#9989;</div><div class="kpi-value" id="kpi-approved">&#8212;</div><div class="kpi-label">Approved</div></div>
+      <div class="kpi-card"><div class="kpi-icon orange">&#9203;</div><div class="kpi-value" id="kpi-pending">&#8212;</div><div class="kpi-label">Pending Approval</div></div>
     </div>
 
     <div class="bottom-grid">
       <div class="card">
         <div class="card-title">Department Breakdown</div>
-        <div class="card-sub">Spending by department · <span id="dept-period"></span></div>
+        <div class="card-sub">Spending by department &#183; <span id="dept-period"></span></div>
         <div class="dept-chart-wrap"><canvas id="dept-chart"></canvas></div>
       </div>
       <div class="card">
@@ -274,7 +274,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--gray-50);color:
     <div class="card">
       <div class="po-list-header">
         <div class="po-list-title">Purchase Orders</div>
-        <button class="btn-export" onclick="exportCSV()">⬇ Export CSV</button>
+        <button class="btn-export" onclick="exportCSV()">&#8595; Export CSV</button>
       </div>
       <div class="filter-bar">
         <span class="filter-bar-label">Filter:</span>
@@ -289,10 +289,10 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--gray-50);color:
           <option value="pending">Pending</option>
           <option value="approved">Approved</option>
         </select>
-        <button class="filter-clear" onclick="clearFilters()">✕ Clear</button>
+        <button class="filter-clear" onclick="clearFilters()">&#10005; Clear</button>
         <span class="filter-count" id="filter-count"></span>
       </div>
-      <input type="text" class="po-search" id="po-search" placeholder="Search by PO number, vendor, requester, or department…" oninput="applyFilters()">
+      <input type="text" class="po-search" id="po-search" placeholder="Search by PO number, vendor, requester, or department&#8230;" oninput="applyFilters()">
       <div class="po-table-wrap">
         <table class="po-table">
           <thead>
@@ -302,7 +302,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--gray-50);color:
             </tr>
           </thead>
           <tbody id="po-tbody">
-            <tr><td colspan="7" style="text-align:center;padding:32px;color:var(--gray-400);">Loading…</td></tr>
+            <tr><td colspan="7" style="text-align:center;padding:32px;color:var(--gray-400);">Loading&#8230;</td></tr>
           </tbody>
         </table>
       </div>
@@ -317,7 +317,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--gray-50);color:
         <div class="modal-po-num" id="m-po-num"></div>
         <div class="modal-requester" id="m-requester"></div>
       </div>
-      <button class="modal-close" onclick="closeModal()">✕</button>
+      <button class="modal-close" onclick="closeModal()">&#10005;</button>
     </div>
     <div class="modal-body">
       <div class="modal-section">
@@ -353,7 +353,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--gray-50);color:
       <div class="modal-section">
         <div class="modal-section-title">Supporting Document</div>
         <div id="attachment-area">
-          <div class="attachment-loading"><div class="attachment-spinner"></div><span>Loading attachment…</span></div>
+          <div class="attachment-loading"><div class="attachment-spinner"></div><span>Loading attachment&#8230;</span></div>
         </div>
       </div>
       <div class="modal-section" id="approval-section"></div>
@@ -390,7 +390,7 @@ async function initAuth(){
 
 async function signIn(){
   const btn=document.getElementById('signin-btn');
-  btn.disabled=true;btn.textContent='Redirecting…';
+  btn.disabled=true;btn.textContent='Redirecting\u2026';
   try{await msalInstance.loginRedirect(LOGIN_REQUEST);}
   catch(e){console.error(e);btn.disabled=false;btn.innerHTML='<div class="ms-logo"><span class="q1"></span><span class="q2"></span><span class="q3"></span><span class="q4"></span></div> Sign in with Microsoft';}
 }
@@ -438,7 +438,7 @@ async function loadData(){
 function parsePO(item){
   const f=item.fields||{};
   const pf=v=>(v&&typeof v==='object')?(v.Value||''):(v||'');
-  return{id:item.id,createdDate:item.createdDateTime,title:f.Title||'',requestedBy:f.field_2||'',dateOfReq:f.field_1||'',dateNeeded:f.field_5||'',department:pf(f.Department),account:pf(f.field_3),vendor:f.Vendor||'',vendorAddress:f.VendorAddress||'',cityStateZip:f.City_x002c_State_x002c_Zip||'',terms:pf(f.Terms),quoteNum:f.Stock_x002f_QuoteNo_x002e_||'',description:f.Order_x0020_Description||'',subtotal:parseFloat(f.Total_x0020_Cost_x0020__x0028_Cu)||0,shipping:parseFloat(f.Shipping_x0020_Cost)||0,additional:parseFloat(f.AdditionalCharges)||0,grandTotal:parseFloat(f.GrandTotal)||0,approved:f.Approved===true,spId:parseInt(f.ID)||0};
+  return{id:item.id,createdDate:item.createdDateTime,title:f.Title||'',requestedBy:f.field_2||'',dateOfReq:f.field_1||'',dateNeeded:f.field_5||'',department:pf(f.Department),account:pf(f.field_3),vendor:f.Vendor||'',vendorAddress:f.VendorAddress||'',cityStateZip:f.City_x002c_State_x002c_Zip||'',terms:pf(f.Terms),quoteNum:f.Stock_x002f_QuoteNo_x002e_||'',description:f.Order_x0020_Description||'',subtotal:parseFloat(f.Total_x0020_Cost_x0020__x0028_Cu)||0,shipping:parseFloat(f.Shipping_x0020_Cost)||0,additional:parseFloat(f.AdditionalCharges)||0,grandTotal:parseFloat(f.GrandTotal)||0,approved:f.Approved===true};
 }
 
 function getPeriodDates(p){
@@ -449,15 +449,15 @@ function getPeriodDates(p){
   else if(p==='3M'){start=new Date(now);start.setMonth(start.getMonth()-3);}
   else if(p==='6M'){start=new Date(now);start.setMonth(start.getMonth()-6);}
   else if(p==='YTD'){start=new Date(y,0,1);}
-  else if(p==='Q1'){start=new Date(y,6,1);end=new Date(y,8,30,23,59,59);}
-  else if(p==='Q2'){start=new Date(y,9,1);end=new Date(y,11,31,23,59,59);}
-  else if(p==='Q3'){start=new Date(y+1,0,1);end=new Date(y+1,2,31,23,59,59);}
-  else if(p==='Q4'){start=new Date(y+1,3,1);end=new Date(y+1,5,30,23,59,59);}
+  else if(p==='Q1'){start=new Date(y,0,1);end=new Date(y,2,31,23,59,59);}
+  else if(p==='Q2'){start=new Date(y,3,1);end=new Date(y,5,30,23,59,59);}
+  else if(p==='Q3'){start=new Date(y,6,1);end=new Date(y,8,30,23,59,59);}
+  else if(p==='Q4'){start=new Date(y,9,1);end=new Date(y,11,31,23,59,59);}
   else{start=new Date(now);start.setMonth(start.getMonth()-3);}
   start.setHours(0,0,0,0);return{start,end};
 }
 
-function getPeriodLabel(p){const y=new Date().getFullYear();return{'1W':'Past 7 days','1M':'Past 30 days','3M':'Past 3 months','6M':'Past 6 months','YTD':`Year to date ${y}`,'Q1':`Q1 (Jul-Sep ${y})`,'Q2':`Q2 (Oct-Dec ${y})`,'Q3':`Q3 (Jan-Mar ${y+1})`,'Q4':`Q4 (Apr-Jun ${y+1})`}[p]||p;}
+function getPeriodLabel(p){const y=new Date().getFullYear();return{'1W':'Past 7 days','1M':'Past 30 days','3M':'Past 3 months','6M':'Past 6 months','YTD':`Year to date ${y}`,'Q1':`Q1 ${y}`,'Q2':`Q2 ${y}`,'Q3':`Q3 ${y}`,'Q4':`Q4 ${y}`}[p]||p;}
 
 function renderAll(){
   filteredPOs=allPOs.filter(po=>{const{start,end}=getPeriodDates(currentPeriod),d=new Date(po.createdDate);return d>=start&&d<=end;});
@@ -467,7 +467,7 @@ function renderAll(){
 }
 
 function renderHero(){
-  const t=filteredPOs.filter(p=>p.approved).reduce((s,p)=>s+p.grandTotal,0);
+  const t=filteredPOs.reduce((s,p)=>s+p.grandTotal,0);
   document.getElementById('hero-amount').textContent=fmt(t);
   document.getElementById('hero-change').textContent=`${filteredPOs.length} purchase order${filteredPOs.length!==1?'s':''}`;
   document.getElementById('hero-period-label').textContent=getPeriodLabel(currentPeriod);
@@ -477,7 +477,7 @@ function renderChart(){
   const canvas=document.getElementById('spending-chart'),ctx=canvas.getContext('2d');
   const{start,end}=getPeriodDates(currentPeriod);
   const days=[];const d=new Date(start);while(d<=end){days.push(new Date(d));d.setDate(d.getDate()+1);}
-  const sorted=[...filteredPOs.filter(p=>p.approved)].sort((a,b)=>new Date(a.createdDate)-new Date(b.createdDate));
+  const sorted=[...filteredPOs].sort((a,b)=>new Date(a.createdDate)-new Date(b.createdDate));
   let run=0;const labels=[],values=[];
   days.forEach(day=>{
     const de=new Date(day);de.setHours(23,59,59,999);
@@ -491,7 +491,7 @@ function renderChart(){
 }
 
 function renderKPIs(){
-  const t=filteredPOs.filter(p=>p.approved).reduce((s,p)=>s+p.grandTotal,0);
+  const t=filteredPOs.reduce((s,p)=>s+p.grandTotal,0);
   document.getElementById('kpi-total').textContent=fmt(t);
   document.getElementById('kpi-submitted').textContent=filteredPOs.length;
   document.getElementById('kpi-approved').textContent=filteredPOs.filter(p=>p.approved).length;
@@ -499,16 +499,16 @@ function renderKPIs(){
 }
 
 function renderDeptChart(){
-  const map={};filteredPOs.filter(p=>p.approved).forEach(p=>{const d=p.department||'Unknown';map[d]=(map[d]||0)+p.grandTotal;});
+  const map={};filteredPOs.forEach(p=>{const d=p.department||'Unknown';map[d]=(map[d]||0)+p.grandTotal;});
   const sorted=Object.entries(map).sort((a,b)=>b[1]-a[1]).slice(0,8);
   const canvas=document.getElementById('dept-chart');
   if(deptChart)deptChart.destroy();
   if(!sorted.length){canvas.style.display='none';return;}canvas.style.display='block';
-  deptChart=new Chart(canvas,{type:'bar',data:{labels:sorted.map(([k])=>k.length>22?k.slice(0,20)+'…':k),datasets:[{data:sorted.map(([,v])=>v),backgroundColor:sorted.map((_,i)=>i===0?'#134e2f':`rgba(19,78,47,${0.75-i*0.07})`),borderRadius:4,borderSkipped:false}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,animation:{duration:700},plugins:{legend:{display:false},tooltip:{backgroundColor:'#1f2937',callbacks:{label:item=>' '+fmt(item.raw)}}},scales:{x:{grid:{color:'rgba(0,0,0,0.04)'},border:{display:false},ticks:{font:{family:"'Plus Jakarta Sans',sans-serif",size:11},color:'#9ca3af',callback:v=>'$'+(v/1000).toFixed(0)+'k'}},y:{grid:{display:false},border:{display:false},ticks:{font:{family:"'Plus Jakarta Sans',sans-serif",size:12},color:'#374151'}}}}});
+  deptChart=new Chart(canvas,{type:'bar',data:{labels:sorted.map(([k])=>k.length>22?k.slice(0,20)+'\u2026':k),datasets:[{data:sorted.map(([,v])=>v),backgroundColor:sorted.map((_,i)=>i===0?'#134e2f':`rgba(19,78,47,${0.75-i*0.07})`),borderRadius:4,borderSkipped:false}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,animation:{duration:700},plugins:{legend:{display:false},tooltip:{backgroundColor:'#1f2937',callbacks:{label:item=>' '+fmt(item.raw)}}},scales:{x:{grid:{color:'rgba(0,0,0,0.04)'},border:{display:false},ticks:{font:{family:"'Plus Jakarta Sans',sans-serif",size:11},color:'#9ca3af',callback:v=>'$'+(v/1000).toFixed(0)+'k'}},y:{grid:{display:false},border:{display:false},ticks:{font:{family:"'Plus Jakarta Sans',sans-serif",size:12},color:'#374151'}}}}});
 }
 
 function renderVendors(){
-  const map={};filteredPOs.filter(p=>p.approved).forEach(p=>{const v=p.vendor||'Unknown';map[v]=(map[v]||0)+p.grandTotal;});
+  const map={};filteredPOs.forEach(p=>{const v=p.vendor||'Unknown';map[v]=(map[v]||0)+p.grandTotal;});
   const sorted=Object.entries(map).sort((a,b)=>b[1]-a[1]).slice(0,6);
   const el=document.getElementById('vendor-list');
   if(!sorted.length){el.innerHTML='<div style="font-size:13px;color:var(--gray-400);padding:8px 0;">No data for this period</div>';return;}
@@ -556,26 +556,26 @@ function renderPOTable(){
   const tbody=document.getElementById('po-tbody');
   if(!displayedPOs.length){tbody.innerHTML='<tr><td colspan="7" style="text-align:center;padding:32px;color:var(--gray-400);">No purchase orders match your filters</td></tr>';return;}
   const sorted=[...displayedPOs].sort((a,b)=>new Date(b.createdDate)-new Date(a.createdDate));
-  tbody.innerHTML=sorted.map(p=>`<tr onclick='openModal(${JSON.stringify(p).replace(/'/g,"&#39;").replace(/\//g,"\\/")})'><td><span class="po-num">${p.title||'—'}</span></td><td style="font-weight:500;">${p.requestedBy||'—'}</td><td><span class="po-dept">${p.department||'—'}</span></td><td style="max-width:130px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${p.vendor||'—'}</td><td style="color:var(--gray-500);font-size:12px;white-space:nowrap;">${fmtShort(p.createdDate)}</td><td class="po-amount">${fmt(p.grandTotal)}</td><td>${badge(p.approved)}</td></tr>`).join('');
+  tbody.innerHTML=sorted.map(p=>`<tr onclick='openModal(${JSON.stringify(p).replace(/'/g,"&#39;").replace(/\//g,"\\/")})'><td><span class="po-num">${p.title||'\u2014'}</span></td><td style="font-weight:500;">${p.requestedBy||'\u2014'}</td><td><span class="po-dept">${p.department||'\u2014'}</span></td><td style="max-width:130px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${p.vendor||'\u2014'}</td><td style="color:var(--gray-500);font-size:12px;white-space:nowrap;">${fmtShort(p.createdDate)}</td><td class="po-amount">${fmt(p.grandTotal)}</td><td>${badge(p.approved)}</td></tr>`).join('');
 }
 
-function badge(a){return a?'<span class="status-badge approved">✓ Approved</span>':'<span class="status-badge pending">⏳ Pending</span>';}
+function badge(a){return a?'<span class="status-badge approved">&#10003; Approved</span>':'<span class="status-badge pending">&#9203; Pending</span>';}
 
 function openModal(po){
   if(typeof po==='string')po=JSON.parse(po);
   currentModalPO=po;
-  document.getElementById('m-po-num').textContent=po.title||'—';
-  document.getElementById('m-requester').textContent='Submitted by '+(po.requestedBy||'—');
-  document.getElementById('m-date-req').textContent=po.dateOfReq||'—';
-  document.getElementById('m-date-needed').textContent=po.dateNeeded||'—';
-  document.getElementById('m-dept').textContent=po.department||'—';
-  document.getElementById('m-account').textContent=po.account||'—';
+  document.getElementById('m-po-num').textContent=po.title||'\u2014';
+  document.getElementById('m-requester').textContent='Submitted by '+(po.requestedBy||'\u2014');
+  document.getElementById('m-date-req').textContent=po.dateOfReq||'\u2014';
+  document.getElementById('m-date-needed').textContent=po.dateNeeded||'\u2014';
+  document.getElementById('m-dept').textContent=po.department||'\u2014';
+  document.getElementById('m-account').textContent=po.account||'\u2014';
   document.getElementById('m-status').innerHTML=badge(po.approved);
-  document.getElementById('m-vendor').textContent=po.vendor||'—';
-  document.getElementById('m-quote').textContent=po.quoteNum||'—';
-  document.getElementById('m-address').textContent=[po.vendorAddress,po.cityStateZip].filter(Boolean).join(', ')||'—';
-  document.getElementById('m-terms').textContent=po.terms||'—';
-  document.getElementById('m-desc').textContent=po.description||'—';
+  document.getElementById('m-vendor').textContent=po.vendor||'\u2014';
+  document.getElementById('m-quote').textContent=po.quoteNum||'\u2014';
+  document.getElementById('m-address').textContent=[po.vendorAddress,po.cityStateZip].filter(Boolean).join(', ')||'\u2014';
+  document.getElementById('m-terms').textContent=po.terms||'\u2014';
+  document.getElementById('m-desc').textContent=po.description||'\u2014';
   document.getElementById('m-subtotal').textContent=fmt(po.subtotal);
   document.getElementById('m-shipping').textContent=fmt(po.shipping);
   document.getElementById('m-additional').textContent=fmt(po.additional);
@@ -591,47 +591,19 @@ function handleModalClick(e){if(e.target===document.getElementById('po-modal'))c
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
 
 async function loadAttachment(itemId){
-  var area=document.getElementById("attachment-area");
-  area.innerHTML='<div class="attachment-loading"><div class="attachment-spinner"></div><span>Loading document...</span></div>';
-  var spId=currentModalPO&&currentModalPO.spId?currentModalPO.spId:0;
-  var spBase="https://ilsroyals.sharepoint.com/sites/ilsforms";
-  var listId="9616e550-b144-445a-8659-3f362d489cf4";
-  var dispUrl=spId?spBase+"/Lists/Purchase%20Order%20List/DispForm.aspx?ID="+spId:spBase+"/Lists/Purchase%20Order%20List";
-  function fallback(){
-    area.innerHTML='<div class="attachment-box" style="cursor:default;"><div class="attachment-icon">&#128194;</div><div class="attachment-info"><div class="attachment-name">Supporting Document</div><div class="attachment-sub">Click to view this PO and its attachments in SharePoint</div></div><a href="'+dispUrl+'" target="_blank" class="btn-view-doc">Open in SharePoint</a></div>';
+  const area=document.getElementById('attachment-area');
+  area.innerHTML='<div class="attachment-loading"><div class="attachment-spinner"></div><span>Loading attachment\u2026</span></div>';
+  try{
+    const tok=await msalInstance.acquireTokenSilent({...GRAPH_REQUEST,account:currentAccount});
+    const res=await fetch(`${SP_BASE}/items/${itemId}/attachments`,{headers:{Authorization:`Bearer ${tok.accessToken}`}});
+    const data=await res.json();
+    const atts=data.value||[];
+    if(!atts.length){area.innerHTML='<p class="no-attachment">\uD83D\uDCED No supporting document attached to this PO.</p>';return;}
+    area.innerHTML=atts.map(a=>`<div class="attachment-box"><div class="attachment-icon">\uD83D\uDCC4</div><div class="attachment-info"><div class="attachment-name">${a.name}</div><div class="attachment-sub">Supporting document</div></div><button class="btn-view-doc" onclick="viewDoc('${encodeURIComponent(a.contentUrl||'')}')">View / Download</button></div>`).join('');
+  }catch(err){
+    console.error(err);
+    area.innerHTML='<p class="no-attachment">\u26A0 Could not load attachment. <a href="https://ilsroyals.sharepoint.com/sites/ilsforms/Lists/Purchase%20Order%20List" target="_blank" style="color:var(--green);font-weight:600;">View in SharePoint \u2192</a></p>';
   }
-  if(!spId){fallback();return;}
-  msalInstance.acquireTokenSilent({scopes:GRAPH_REQUEST.scopes,account:currentAccount})
-  .then(function(tok){
-    var h={Authorization:"Bearer "+tok.accessToken};
-    // Step 1: Resolve actual site ID (path notation returns 400 on /attachments)
-    return fetch("https://graph.microsoft.com/v1.0/sites/ilsroyals.sharepoint.com:/sites/ilsforms",{headers:h})
-    .then(function(r){return r.json();})
-    .then(function(site){
-      var siteId=site.id;
-      if(!siteId)return Promise.reject("no site id");
-      // Step 2: Use resolved site ID for attachments endpoint
-      var url="https://graph.microsoft.com/v1.0/sites/"+siteId+"/lists/"+listId+"/items/"+itemId+"/attachments";
-      return fetch(url,{headers:h});
-    })
-    .then(function(r){
-      if(!r.ok)return Promise.reject("att "+r.status);
-      return r.json();
-    })
-    .then(function(d){
-      var atts=d.value||[];
-      if(!atts.length){fallback();return;}
-      area.innerHTML=atts.map(function(a){
-        var fileUrl=a.contentUrl||dispUrl;
-        var nm=a.name||"Supporting Document";
-        return '<div class="attachment-box"><div class="attachment-icon">&#128196;</div><div class="attachment-info"><div class="attachment-name">'+nm+'</div><div class="attachment-sub">Click to view or download</div></div><a href="'+fileUrl+'" target="_blank" class="btn-view-doc">View / Download</a></div>';
-      }).join("");
-    });
-  })
-  .catch(function(err){
-    console.error("Attachment error:",err);
-    fallback();
-  });
 }
 
 function viewDoc(encoded){
@@ -643,7 +615,7 @@ function viewDoc(encoded){
 function renderApprovalSection(po){
   const s=document.getElementById('approval-section');
   if(po.approved){
-    s.innerHTML='<div class="modal-section-title">Approval Status</div><div class="approved-banner"><span style="font-size:20px;">✅</span><span>This purchase order has been approved.</span></div>';
+    s.innerHTML='<div class="modal-section-title">Approval Status</div><div class="approved-banner"><span style="font-size:20px;">\u2705</span><span>This purchase order has been approved.</span></div>';
     return;
   }
   s.innerHTML=`
@@ -655,15 +627,15 @@ function renderApprovalSection(po){
       </div>
       <div class="approval-box-body">
         <label class="approval-comments-label">Comments / Notes</label>
-        <textarea class="approval-comments" id="approval-comments" placeholder="Add notes here… (required for rejection)"></textarea>
+        <textarea class="approval-comments" id="approval-comments" placeholder="Add notes here\u2026 (required for rejection)"></textarea>
         <div class="approval-btns">
           <button class="btn-approve" id="btn-approve" onclick="submitDecision('approve')">
             <div class="btn-spinner" id="approve-spinner"></div>
-            <span class="btn-label">✓ Approve PO</span>
+            <span class="btn-label">\u2713 Approve PO</span>
           </button>
           <button class="btn-reject" id="btn-reject" onclick="submitDecision('reject')">
             <div class="btn-spinner" id="reject-spinner" style="border-color:rgba(220,38,38,.4);border-top-color:var(--red);"></div>
-            <span class="btn-label">✗ Reject PO</span>
+            <span class="btn-label">\u2717 Reject PO</span>
           </button>
         </div>
         <div id="approval-result"></div>
@@ -675,25 +647,44 @@ async function submitDecision(decision){
   const comments=(document.getElementById('approval-comments')?.value||'').trim();
   if(decision==='reject'&&!comments){
     const ta=document.getElementById('approval-comments');
-    ta.style.borderColor='var(--red)';ta.placeholder='⚠ A reason is required for rejection';ta.focus();return;
+    ta.style.borderColor='var(--red)';ta.placeholder='\u26A0 A reason is required for rejection';ta.focus();return;
   }
   const btnA=document.getElementById('btn-approve'),btnR=document.getElementById('btn-reject');
   const sp=document.getElementById(decision==='approve'?'approve-spinner':'reject-spinner');
   btnA.disabled=true;btnR.disabled=true;sp.style.display='block';
   const resultEl=document.getElementById('approval-result');
-  const payload={sharePointItemId:currentModalPO.id,poNumber:currentModalPO.title,decision,comments,approverEmail:currentAccount.username,approverName:currentAccount.name||currentAccount.username,requestedBy:currentModalPO.requestedBy,vendor:currentModalPO.vendor,department:currentModalPO.department,grandTotal:currentModalPO.grandTotal};
+
+  // Look up submitter email via Graph API using display name
+  let submitterEmail='';
   try{
-    if(!APPROVAL_FLOW_URL||APPROVAL_FLOW_URL==='YOUR_APPROVAL_HANDLER_FLOW_URL_HERE'){
-      await patchSharePoint(currentModalPO.id,decision==='approve');
-    } else {
-      const res=await fetch(APPROVAL_FLOW_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
-      if(!res.ok)throw new Error('Flow error '+res.status);
-      if(decision==='approve')await patchSharePoint(currentModalPO.id,true);
-    }
+    const sTok=await msalInstance.acquireTokenSilent({...GRAPH_REQUEST,account:currentAccount});
+    const sRes=await fetch(`https://graph.microsoft.com/v1.0/users?$filter=displayName eq '${encodeURIComponent(currentModalPO.requestedBy)}'&$select=mail`,{headers:{Authorization:`Bearer ${sTok.accessToken}`}});
+    const sData=await sRes.json();
+    submitterEmail=sData.value?.[0]?.mail||'';
+  }catch(e){submitterEmail='';}
+
+  const payload={
+    sharePointItemId:currentModalPO.id,
+    poNumber:currentModalPO.title,
+    decision,
+    comments,
+    approverEmail:currentAccount.username,
+    approverName:currentAccount.name||currentAccount.username,
+    requestedBy:currentModalPO.requestedBy,
+    submitterEmail,
+    vendor:currentModalPO.vendor,
+    department:currentModalPO.department,
+    grandTotal:currentModalPO.grandTotal
+  };
+
+  try{
+    const res=await fetch(APPROVAL_FLOW_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    if(!res.ok)throw new Error('Flow error '+res.status);
+    if(decision==='approve')await patchSharePoint(currentModalPO.id,true);
     const po=allPOs.find(p=>p.id===currentModalPO.id);
     if(po)po.approved=decision==='approve';
     currentModalPO.approved=decision==='approve';
-    resultEl.innerHTML=`<div class="approval-result success"><div class="approval-result-icon">${decision==='approve'?'✅':'📋'}</div><div class="approval-result-text"><strong>${decision==='approve'?'PO Approved':'PO Rejected'}</strong>${decision==='approve'?'The PO has been marked as approved.':'The rejection has been recorded.'} ${!APPROVAL_FLOW_URL||APPROVAL_FLOW_URL==='YOUR_APPROVAL_HANDLER_FLOW_URL_HERE'?'<br><small style="opacity:.8">Configure APPROVAL_FLOW_URL to enable automatic PDF generation and email notifications.</small>':''}</div></div>`;
+    resultEl.innerHTML=`<div class="approval-result success"><div class="approval-result-icon">${decision==='approve'?'\u2705':'\uD83D\uDCCB'}</div><div class="approval-result-text"><strong>${decision==='approve'?'PO Approved':'PO Rejected'}</strong>${decision==='approve'?'The PO has been approved and a signed PDF will be emailed to the requester.':'The rejection has been recorded and the requester will be notified.'}</div></div>`;
     btnA.style.display='none';btnR.style.display='none';
     document.getElementById('approval-comments').style.display='none';
     document.querySelector('.approval-comments-label').style.display='none';
@@ -701,7 +692,7 @@ async function submitDecision(decision){
     renderKPIs();applyFilters();
   }catch(err){
     console.error(err);
-    resultEl.innerHTML='<div class="approval-result error"><div class="approval-result-icon">⚠</div><div class="approval-result-text"><strong>Action Failed</strong>Could not process the decision. Please try again.</div></div>';
+    resultEl.innerHTML='<div class="approval-result error"><div class="approval-result-icon">\u26A0</div><div class="approval-result-text"><strong>Action Failed</strong>Could not process the decision. Please try again.</div></div>';
     btnA.disabled=false;btnR.disabled=false;sp.style.display='none';
   }
 }
@@ -726,7 +717,7 @@ function exportCSV(){
 }
 
 function fmt(n){return'$'+(parseFloat(n)||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
-function fmtShort(s){if(!s)return'—';return new Date(s).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});}
+function fmtShort(s){if(!s)return'\u2014';return new Date(s).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});}
 
 initAuth();
 </script>
