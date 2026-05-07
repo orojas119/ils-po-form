@@ -438,7 +438,7 @@ async function loadData(){
 function parsePO(item){
   const f=item.fields||{};
   const pf=v=>(v&&typeof v==='object')?(v.Value||''):(v||'');
-  return{id:item.id,createdDate:item.createdDateTime,title:f.Title||'',requestedBy:f.field_2||'',dateOfReq:f.field_1||'',dateNeeded:f.field_5||'',department:pf(f.Department),account:pf(f.field_3),vendor:f.Vendor||'',vendorAddress:f.VendorAddress||'',cityStateZip:f.City_x002c_State_x002c_Zip||'',terms:pf(f.Terms),quoteNum:f.Stock_x002f_QuoteNo_x002e_||'',description:f.Order_x0020_Description||'',subtotal:parseFloat(f.Total_x0020_Cost_x0020__x0028_Cu)||0,shipping:parseFloat(f.Shipping_x0020_Cost)||0,additional:parseFloat(f.AdditionalCharges)||0,grandTotal:parseFloat(f.GrandTotal)||0,approved:f.Approved===true};
+  return{id:item.id,createdDate:item.createdDateTime,title:f.Title||'',requestedBy:f.field_2||'',dateOfReq:f.field_1||'',dateNeeded:f.field_5||'',department:pf(f.Department),account:pf(f.field_3),vendor:f.Vendor||'',vendorAddress:f.VendorAddress||'',cityStateZip:f.City_x002c_State_x002c_Zip||'',terms:pf(f.Terms),quoteNum:f.Stock_x002f_QuoteNo_x002e_||'',description:f.Order_x0020_Description||'',subtotal:parseFloat(f.Total_x0020_Cost_x0020__x0028_Cu)||0,shipping:parseFloat(f.Shipping_x0020_Cost)||0,additional:parseFloat(f.AdditionalCharges)||0,grandTotal:parseFloat(f.GrandTotal)||0,approved:f.Approved===true,spId:parseInt(f.ID)||0};
 }
 
 function getPeriodDates(p){
