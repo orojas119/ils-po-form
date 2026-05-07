@@ -449,15 +449,15 @@ function getPeriodDates(p){
   else if(p==='3M'){start=new Date(now);start.setMonth(start.getMonth()-3);}
   else if(p==='6M'){start=new Date(now);start.setMonth(start.getMonth()-6);}
   else if(p==='YTD'){start=new Date(y,0,1);}
-  else if(p==='Q1'){start=new Date(y,0,1);end=new Date(y,2,31,23,59,59);}
-  else if(p==='Q2'){start=new Date(y,3,1);end=new Date(y,5,30,23,59,59);}
-  else if(p==='Q3'){start=new Date(y,6,1);end=new Date(y,8,30,23,59,59);}
-  else if(p==='Q4'){start=new Date(y,9,1);end=new Date(y,11,31,23,59,59);}
+  else if(p==='Q1'){start=new Date(y,6,1);end=new Date(y,8,30,23,59,59);}
+  else if(p==='Q2'){start=new Date(y,9,1);end=new Date(y,11,31,23,59,59);}
+  else if(p==='Q3'){start=new Date(y+1,0,1);end=new Date(y+1,2,31,23,59,59);}
+  else if(p==='Q4'){start=new Date(y+1,3,1);end=new Date(y+1,5,30,23,59,59);}
   else{start=new Date(now);start.setMonth(start.getMonth()-3);}
   start.setHours(0,0,0,0);return{start,end};
 }
 
-function getPeriodLabel(p){const y=new Date().getFullYear();return{'1W':'Past 7 days','1M':'Past 30 days','3M':'Past 3 months','6M':'Past 6 months','YTD':`Year to date ${y}`,'Q1':`Q1 ${y}`,'Q2':`Q2 ${y}`,'Q3':`Q3 ${y}`,'Q4':`Q4 ${y}`}[p]||p;}
+function getPeriodLabel(p){const y=new Date().getFullYear();return{'1W':'Past 7 days','1M':'Past 30 days','3M':'Past 3 months','6M':'Past 6 months','YTD':`Year to date ${y}`,'Q1':`Q1 (Jul-Sep ${y})`,'Q2':`Q2 (Oct-Dec ${y})`,'Q3':`Q3 (Jan-Mar ${y+1})`,'Q4':`Q4 (Apr-Jun ${y+1})`}[p]||p;}
 
 function renderAll(){
   filteredPOs=allPOs.filter(po=>{const{start,end}=getPeriodDates(currentPeriod),d=new Date(po.createdDate);return d>=start&&d<=end;});
