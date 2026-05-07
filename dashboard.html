@@ -592,17 +592,44 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
 
 async function loadAttachment(itemId){
   const area=document.getElementById('attachment-area');
-  area.innerHTML='<div class="attachment-loading"><div class="attachment-spinner"></div><span>Loading attachment…</span></div>';
+  area.innerHTML='<div class="attachment-loading"><div class="attachment-spinner"></div><span>Loading...</span></div>';
+  const spNumId=currentModalPO&&currentModalPO.spId?currentModalPO.spId:0;
+  const dispFormUrl=spNumId
+    ?'https://ilsroyals.sharepoint.com/sites/ilsforms/Lists/Purchase%20Order%20List/DispForm.aspx?ID='+spNumId
+    :'https://ilsroyals.sharepoint.com/sites/ilsforms/Lists/Purchase%20Order%20List';
+  const fallbackHtml='<div class="attachment-box" style="cursor:default;"><div class="attachment-icon">&#128194;</div><div class="attachment-info"><div class="attachment-name">Supporting Document</div><div class="attachment-sub">Click to open this PO in SharePoint</div></div><a href="'+dispFormUrl+'" target="_blank" class="btn-view-doc">Open in SharePoint</a></div>';
   try{
     const tok=await msalInstance.acquireTokenSilent({...GRAPH_REQUEST,account:currentAccount});
-    const res=await fetch(`${SP_BASE}/items/${itemId}/attachments`,{headers:{Authorization:`Bearer ${tok.accessToken}`}});
-    const data=await res.json();
-    const atts=data.value||[];
-    if(!atts.length){area.innerHTML='<p class="no-attachment">📭 No supporting document attached to this PO.</p>';return;}
-    area.innerHTML=atts.map(a=>`<div class="attachment-box"><div class="attachment-icon">📄</div><div class="attachment-info"><div class="attachment-name">${a.name}</div><div class="attachment-sub">Supporting document</div></div><button class="btn-view-doc" onclick="viewDoc('${encodeURIComponent(a.contentUrl||'')}')">View / Download</button></div>`).join('');
+    let atts=[];
+    // Try SharePoint REST API first (most reliable for list item attachments)
+    if(spNumId){
+      try{
+        const r=await fetch(
+          'https://ilsroyals.sharepoint.com/sites/ilsforms/_api/web/lists(guid'9616e550-b144-445a-8659-3f362d489cf4')/items('+spNumId+')/AttachmentFiles',
+          {headers:{Authorization:'Bearer '+tok.accessToken,Accept:'application/json;odata=nometadata'}}
+        );
+        if(r.ok){const d=await r.json();atts=d.value||[];}
+      }catch(e){console.warn('SP REST failed',e);}
+    }
+    // Fallback: try Graph API attachments endpoint
+    if(!atts.length){
+      try{
+        const r2=await fetch(SP_BASE+'/items/'+itemId+'/attachments',{headers:{Authorization:'Bearer '+tok.accessToken}});
+        if(r2.ok){const d2=await r2.json();atts=d2.value||[];}
+      }catch(e){console.warn('Graph attachments failed',e);}
+    }
+    if(atts.length){
+      area.innerHTML=atts.map(function(a){
+        var url=a.ServerRelativeUrl?'https://ilsroyals.sharepoint.com'+a.ServerRelativeUrl:(a.contentUrl||dispFormUrl);
+        var name=a.FileName||a.name||'Supporting Document';
+        return '<div class="attachment-box"><div class="attachment-icon">&#128196;</div><div class="attachment-info"><div class="attachment-name">'+name+'</div><div class="attachment-sub">Click to view or download</div></div><a href="'+url+'" target="_blank" class="btn-view-doc">View / Download</a></div>';
+      }).join('');
+    } else {
+      area.innerHTML=fallbackHtml;
+    }
   }catch(err){
     console.error(err);
-    area.innerHTML='<p class="no-attachment">⚠ Could not load attachment. <a href="https://ilsroyals.sharepoint.com/sites/ilsforms/Lists/Purchase%20Order%20List" target="_blank" style="color:var(--green);font-weight:600;">View in SharePoint →</a></p>';
+    area.innerHTML=fallbackHtml;
   }
 }
 
