@@ -24,309 +24,89 @@
     --gray-600:    #4b5563;
     --gray-800:    #1f2937;
     --white:       #ffffff;
-    --shadow-sm:   0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.04);
-    --shadow-md:   0 4px 16px rgba(19,78,47,.10), 0 2px 6px rgba(0,0,0,.04);
-    --shadow-lg:   0 12px 40px rgba(19,78,47,.14), 0 4px 12px rgba(0,0,0,.06);
+    --shadow-sm:   0 1px 3px rgba(0,0,0,.08);
+    --shadow-md:   0 4px 16px rgba(19,78,47,.10);
+    --shadow-lg:   0 12px 40px rgba(19,78,47,.14);
     --radius:      12px;
     --radius-sm:   8px;
     --transition:  all .2s ease;
   }
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   html { scroll-behavior: smooth; }
-  body {
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    background: var(--gray-50);
-    color: var(--gray-800);
-    min-height: 100vh;
-    font-size: 15px;
-    line-height: 1.6;
-  }
+  body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--gray-50); color: var(--gray-800); min-height: 100vh; font-size: 15px; line-height: 1.6; }
 
-  /* ── LOGIN SCREEN ──────────────────────────────────────────────── */
-  #login-screen {
-    min-height: 100vh;
-    background: var(--green);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 24px;
-    position: relative;
-    overflow: hidden;
-  }
-  #login-screen::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background:
-      radial-gradient(ellipse at 20% 50%, rgba(196,154,26,.12) 0%, transparent 60%),
-      radial-gradient(ellipse at 80% 20%, rgba(255,255,255,.04) 0%, transparent 50%);
-    pointer-events: none;
-  }
-  .login-card {
-    background: rgba(255,255,255,.97);
-    border-radius: 20px;
-    padding: 52px 44px;
-    max-width: 440px;
-    width: 100%;
-    text-align: center;
-    box-shadow: 0 24px 80px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.15);
-    position: relative;
-    z-index: 1;
-    animation: fadeUp .4s ease;
-  }
-  @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-  .login-crest {
-    width: 72px; height: 72px;
-    background: var(--green);
-    border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    margin: 0 auto 20px;
-    font-family: 'Lora', serif;
-    font-size: 28px; font-weight: 700;
-    color: #facc15;
-    box-shadow: 0 8px 24px rgba(19,78,47,.35);
-  }
-  .login-school {
-    font-family: 'Lora', serif;
-    font-size: 20px;
-    font-weight: 700;
-    color: var(--green);
-    margin-bottom: 4px;
-    line-height: 1.2;
-  }
-  .login-portal {
-    font-size: 13px;
-    color: var(--gray-400);
-    text-transform: uppercase;
-    letter-spacing: .8px;
-    font-weight: 500;
-    margin-bottom: 36px;
-  }
-  .login-divider {
-    height: 1px;
-    background: var(--gray-100);
-    margin: 0 0 28px;
-  }
-  .login-prompt {
-    font-size: 15px;
-    color: var(--gray-600);
-    margin-bottom: 24px;
-    line-height: 1.5;
-  }
-  .btn-microsoft {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    width: 100%;
-    padding: 13px 20px;
-    background: #0078d4;
-    color: white;
-    border: none;
-    border-radius: var(--radius-sm);
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    font-size: 15px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: var(--transition);
-    box-shadow: 0 2px 8px rgba(0,120,212,.35);
-    letter-spacing: .2px;
-  }
-  .btn-microsoft:hover { background: #006bbf; transform: translateY(-1px); box-shadow: 0 4px 14px rgba(0,120,212,.4); }
-  .btn-microsoft:active { transform: translateY(0); }
-  .btn-microsoft:disabled { opacity: .6; cursor: not-allowed; transform: none; }
-  .ms-logo {
-    width: 20px; height: 20px;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 2px;
-    flex-shrink: 0;
-  }
-  .ms-logo span { display: block; border-radius: 1px; }
-  .ms-logo .q1 { background: #f25022; }
-  .ms-logo .q2 { background: #7fba00; }
-  .ms-logo .q3 { background: #00a4ef; }
-  .ms-logo .q4 { background: #ffb900; }
-  .login-notice {
-    margin-top: 20px;
-    font-size: 12px;
-    color: var(--gray-400);
-    line-height: 1.5;
-  }
-  .login-notice strong { color: var(--gray-600); }
-  .login-error {
-    background: var(--red-light);
-    border: 1px solid #fca5a5;
-    border-radius: var(--radius-sm);
-    padding: 10px 14px;
-    font-size: 13px;
-    color: var(--red);
-    margin-top: 16px;
-    display: none;
-    text-align: left;
-  }
-  .login-error.show { display: block; }
-
-  /* ── AUTH LOADING STATE ─────────────────────────────────────────── */
-  #auth-loading {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--green);
-  }
-  .auth-spinner {
-    width: 40px; height: 40px;
-    border: 3px solid rgba(255,255,255,.2);
-    border-top-color: #facc15;
-    border-radius: 50%;
-    animation: spin .8s linear infinite;
-  }
+  /* AUTH LOADING */
+  #auth-loading { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: var(--green); }
+  .auth-spinner { width: 40px; height: 40px; border: 3px solid rgba(255,255,255,.2); border-top-color: #facc15; border-radius: 50%; animation: spin .8s linear infinite; }
   @keyframes spin { to { transform: rotate(360deg); } }
 
-  /* ── APP SHELL (hidden until auth) ─────────────────────────────── */
+  /* LOGIN SCREEN */
+  #login-screen { min-height: 100vh; background: var(--green); display: flex; align-items: center; justify-content: center; padding: 24px; position: relative; }
+  #login-screen::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at 20% 50%, rgba(196,154,26,.12) 0%, transparent 60%); pointer-events: none; }
+  .login-card { background: rgba(255,255,255,.97); border-radius: 20px; padding: 52px 44px; max-width: 440px; width: 100%; text-align: center; box-shadow: 0 24px 80px rgba(0,0,0,.3); position: relative; z-index: 1; animation: fadeUp .4s ease; }
+  @keyframes fadeUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+  .login-crest { width: 72px; height: 72px; background: var(--green); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-family: 'Lora', serif; font-size: 28px; font-weight: 700; color: #facc15; box-shadow: 0 8px 24px rgba(19,78,47,.35); }
+  .login-school { font-family: 'Lora', serif; font-size: 20px; font-weight: 700; color: var(--green); margin-bottom: 4px; }
+  .login-portal { font-size: 13px; color: var(--gray-400); text-transform: uppercase; letter-spacing: .8px; font-weight: 500; margin-bottom: 36px; }
+  .login-divider { height: 1px; background: var(--gray-100); margin: 0 0 28px; }
+  .login-prompt { font-size: 15px; color: var(--gray-600); margin-bottom: 24px; line-height: 1.5; }
+  .btn-microsoft { display: flex; align-items: center; justify-content: center; gap: 12px; width: 100%; padding: 13px 20px; background: #0078d4; color: white; border: none; border-radius: var(--radius-sm); font-family: 'Plus Jakarta Sans', sans-serif; font-size: 15px; font-weight: 600; cursor: pointer; transition: var(--transition); box-shadow: 0 2px 8px rgba(0,120,212,.35); }
+  .btn-microsoft:hover { background: #006bbf; transform: translateY(-1px); }
+  .btn-microsoft:disabled { opacity: .6; cursor: not-allowed; transform: none; }
+  .ms-logo { width: 20px; height: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 2px; flex-shrink: 0; }
+  .ms-logo span { display: block; border-radius: 1px; }
+  .ms-logo .q1 { background: #f25022; } .ms-logo .q2 { background: #7fba00; }
+  .ms-logo .q3 { background: #00a4ef; } .ms-logo .q4 { background: #ffb900; }
+  .login-notice { margin-top: 20px; font-size: 12px; color: var(--gray-400); line-height: 1.5; }
+  .login-notice strong { color: var(--gray-600); }
+  .login-error { background: var(--red-light); border: 1px solid #fca5a5; border-radius: var(--radius-sm); padding: 10px 14px; font-size: 13px; color: var(--red); margin-top: 16px; display: none; text-align: left; }
+  .login-error.show { display: block; }
+
+  /* APP SHELL */
   #app-shell { display: none; }
 
-  /* ── HEADER ─────────────────────────────────────────────────────── */
-  .site-header {
-    background: var(--green);
-    padding: 16px 24px;
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    box-shadow: 0 2px 12px rgba(0,0,0,.18);
-    position: sticky;
-    top: 0;
-    z-index: 100;
-  }
-  .header-crest {
-    width: 44px; height: 44px;
-    border-radius: 50%;
-    background: rgba(255,255,255,.12);
-    border: 2px solid rgba(196,154,26,.5);
-    display: flex; align-items: center; justify-content: center;
-    font-family: 'Lora', serif;
-    font-size: 18px; font-weight: 700;
-    color: #facc15;
-    flex-shrink: 0;
-  }
+  /* HEADER */
+  .site-header { background: var(--green); padding: 16px 24px; display: flex; align-items: center; gap: 16px; box-shadow: 0 2px 12px rgba(0,0,0,.18); position: sticky; top: 0; z-index: 100; }
+  .header-crest { width: 44px; height: 44px; border-radius: 50%; background: rgba(255,255,255,.12); border: 2px solid rgba(196,154,26,.5); display: flex; align-items: center; justify-content: center; font-family: 'Lora', serif; font-size: 18px; font-weight: 700; color: #facc15; flex-shrink: 0; }
   .header-text { flex: 1; }
-  .header-school {
-    font-family: 'Lora', serif;
-    font-size: 14px;
-    font-weight: 600;
-    color: #facc15;
-    line-height: 1.2;
-  }
-  .header-title {
-    font-size: 11px;
-    color: rgba(255,255,255,.6);
-    letter-spacing: .5px;
-    text-transform: uppercase;
-  }
-  .header-user {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex-shrink: 0;
-  }
-  .user-avatar {
-    width: 34px; height: 34px;
-    border-radius: 50%;
-    background: rgba(255,255,255,.15);
-    border: 1.5px solid rgba(196,154,26,.5);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 13px;
-    font-weight: 700;
-    color: #facc15;
-    flex-shrink: 0;
-  }
+  .header-school { font-family: 'Lora', serif; font-size: 14px; font-weight: 600; color: #facc15; line-height: 1.2; }
+  .header-title { font-size: 11px; color: rgba(255,255,255,.6); letter-spacing: .5px; text-transform: uppercase; }
+  .header-user { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+  .user-avatar { width: 34px; height: 34px; border-radius: 50%; background: rgba(255,255,255,.15); border: 1.5px solid rgba(196,154,26,.5); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: #facc15; flex-shrink: 0; }
   .user-info { text-align: right; }
-  .user-name {
-    font-size: 12.5px;
-    font-weight: 600;
-    color: white;
-    line-height: 1.2;
-    max-width: 160px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  .user-email {
-    font-size: 10.5px;
-    color: rgba(255,255,255,.55);
-    max-width: 160px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
+  .user-name { font-size: 12.5px; font-weight: 600; color: white; line-height: 1.2; max-width: 160px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .user-email { font-size: 10.5px; color: rgba(255,255,255,.55); max-width: 160px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   @media (max-width: 500px) { .user-info { display: none; } }
-  .btn-signout {
-    padding: 6px 12px;
-    background: rgba(255,255,255,.1);
-    border: 1px solid rgba(255,255,255,.2);
-    border-radius: 6px;
-    color: rgba(255,255,255,.8);
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    font-size: 12px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: var(--transition);
-    white-space: nowrap;
-  }
+  .btn-signout { padding: 6px 12px; background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.2); border-radius: 6px; color: rgba(255,255,255,.8); font-family: 'Plus Jakarta Sans', sans-serif; font-size: 12px; font-weight: 500; cursor: pointer; transition: var(--transition); white-space: nowrap; }
   .btn-signout:hover { background: rgba(255,255,255,.18); color: white; }
 
-  /* ── LAYOUT ─────────────────────────────────────────────────────── */
+  /* LAYOUT */
   .container { max-width: 740px; margin: 0 auto; padding: 32px 16px 60px; }
 
-  /* ── PROGRESS ────────────────────────────────────────────────────── */
-  .progress-wrap {
-    background: var(--white);
-    border-radius: var(--radius);
-    padding: 20px 24px;
-    margin-bottom: 24px;
-    box-shadow: var(--shadow-sm);
-    border: 1px solid var(--gray-200);
-  }
+  /* PROGRESS */
+  .progress-wrap { background: var(--white); border-radius: var(--radius); padding: 20px 24px; margin-bottom: 24px; box-shadow: var(--shadow-sm); border: 1px solid var(--gray-200); }
   .progress-steps { display: flex; align-items: center; }
   .step-pill { display: flex; align-items: center; gap: 8px; flex: 1; }
   .step-pill::after { content: ''; flex: 1; height: 2px; background: var(--gray-200); transition: background .3s; margin: 0 4px; }
   .step-pill:last-child::after { display: none; }
   .step-pill.done::after { background: var(--green); }
-  .step-num {
-    width: 30px; height: 30px; border-radius: 50%;
-    background: var(--gray-200); color: var(--gray-600);
-    font-size: 13px; font-weight: 700;
-    display: flex; align-items: center; justify-content: center;
-    transition: var(--transition); flex-shrink: 0;
-  }
+  .step-num { width: 30px; height: 30px; border-radius: 50%; background: var(--gray-200); color: var(--gray-600); font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center; transition: var(--transition); flex-shrink: 0; }
   .step-pill.active .step-num { background: var(--green); color: var(--white); box-shadow: 0 0 0 4px rgba(19,78,47,.15); }
   .step-pill.done .step-num { background: var(--green); color: var(--white); }
   .step-label { font-size: 12px; font-weight: 600; color: var(--gray-400); transition: var(--transition); white-space: nowrap; }
   .step-pill.active .step-label, .step-pill.done .step-label { color: var(--green); }
   @media (max-width: 500px) { .step-label { display: none; } }
 
-  /* ── CARDS ───────────────────────────────────────────────────────── */
+  /* CARDS */
   .form-step { display: none; animation: fadeIn .25s ease; }
   .form-step.active { display: block; }
-  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-  .card {
-    background: var(--white); border-radius: var(--radius);
-    padding: 28px; margin-bottom: 20px;
-    box-shadow: var(--shadow-sm); border: 1px solid var(--gray-200);
-  }
-  .card-title {
-    font-family: 'Lora', serif; font-size: 20px; font-weight: 600;
-    color: var(--green); margin-bottom: 4px;
-    display: flex; align-items: center; gap: 10px;
-  }
-  .card-title .icon {
-    width: 32px; height: 32px; background: var(--green-light);
-    border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px;
-  }
+  @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+  .card { background: var(--white); border-radius: var(--radius); padding: 28px; margin-bottom: 20px; box-shadow: var(--shadow-sm); border: 1px solid var(--gray-200); }
+  .card-title { font-family: 'Lora', serif; font-size: 20px; font-weight: 600; color: var(--green); margin-bottom: 4px; display: flex; align-items: center; gap: 10px; }
+  .card-title .icon { width: 32px; height: 32px; background: var(--green-light); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; }
   .card-sub { font-size: 13px; color: var(--gray-600); margin-bottom: 24px; padding-bottom: 20px; border-bottom: 1px solid var(--gray-100); }
 
-  /* ── FIELDS ──────────────────────────────────────────────────────── */
+  /* FIELDS */
   .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
   .field-row.single { grid-template-columns: 1fr; }
   .field-row.thirds { grid-template-columns: 1fr 1fr 1fr; }
@@ -334,24 +114,15 @@
   .field { display: flex; flex-direction: column; gap: 5px; }
   .field label { font-size: 12.5px; font-weight: 600; color: var(--gray-600); text-transform: uppercase; letter-spacing: .5px; }
   .field label .req { color: var(--red); margin-left: 2px; }
-  .field input, .field select, .field textarea {
-    padding: 10px 13px; border: 1.5px solid var(--gray-200); border-radius: var(--radius-sm);
-    font-family: 'Plus Jakarta Sans', sans-serif; font-size: 14.5px; color: var(--gray-800);
-    background: var(--white); transition: var(--transition); outline: none; width: 100%;
-  }
+  .field input, .field select, .field textarea { padding: 10px 13px; border: 1.5px solid var(--gray-200); border-radius: var(--radius-sm); font-family: 'Plus Jakarta Sans', sans-serif; font-size: 14.5px; color: var(--gray-800); background: var(--white); transition: var(--transition); outline: none; width: 100%; }
   .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--green); box-shadow: 0 0 0 3px rgba(19,78,47,.1); }
-  .field input.error, .field select.error, .field textarea.error { border-color: var(--red); box-shadow: 0 0 0 3px rgba(220,38,38,.08); }
+  .field input.error, .field select.error, .field textarea.error { border-color: var(--red); }
   .field input[readonly] { background: var(--gray-50); color: var(--gray-600); cursor: default; }
   .field textarea { min-height: 100px; resize: vertical; }
   .field .hint { font-size: 12px; color: var(--gray-400); }
   .field .err-msg { font-size: 12px; color: var(--red); display: none; }
   .field.has-error .err-msg { display: block; }
-  .autofill-badge {
-    display: inline-flex; align-items: center; gap: 4px;
-    font-size: 10.5px; font-weight: 600; color: var(--green);
-    background: var(--green-light); border-radius: 4px;
-    padding: 2px 6px; margin-top: 2px; width: fit-content;
-  }
+  .autofill-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 10.5px; font-weight: 600; color: var(--green); background: var(--green-light); border-radius: 4px; padding: 2px 6px; margin-top: 2px; width: fit-content; }
 
   /* Currency */
   .currency-wrap { position: relative; }
@@ -372,7 +143,6 @@
   .search-select-search { padding: 10px 12px; border: none; border-bottom: 1px solid var(--gray-200); font-family: 'Plus Jakarta Sans', sans-serif; font-size: 14px; outline: none; width: 100%; color: var(--gray-800); }
   .search-select-list { overflow-y: auto; max-height: 240px; }
   .search-select-list .opt-group { padding: 6px 12px 2px; font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .7px; color: var(--gray-400); background: var(--gray-50); border-top: 1px solid var(--gray-100); position: sticky; top: 0; }
-  .search-select-list .opt-group:first-child { border-top: none; }
   .search-select-list .opt { padding: 9px 14px; font-size: 13.5px; cursor: pointer; transition: background .12s; color: var(--gray-800); }
   .search-select-list .opt:hover, .search-select-list .opt.selected { background: var(--green-light); color: var(--green); }
   .search-select-list .opt.hidden { display: none; }
@@ -397,14 +167,12 @@
 
   /* Buttons */
   .nav-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 8px; }
-  .btn { padding: 12px 28px; border-radius: var(--radius-sm); font-family: 'Plus Jakarta Sans', sans-serif; font-size: 14.5px; font-weight: 600; cursor: pointer; border: none; transition: var(--transition); display: flex; align-items: center; gap: 8px; letter-spacing: .2px; }
+  .btn { padding: 12px 28px; border-radius: var(--radius-sm); font-family: 'Plus Jakarta Sans', sans-serif; font-size: 14.5px; font-weight: 600; cursor: pointer; border: none; transition: var(--transition); display: flex; align-items: center; gap: 8px; }
   .btn-ghost { background: var(--white); color: var(--gray-600); border: 1.5px solid var(--gray-200); }
   .btn-ghost:hover { background: var(--gray-50); border-color: var(--gray-400); }
   .btn-primary { background: var(--green); color: var(--white); box-shadow: 0 2px 8px rgba(19,78,47,.3); }
-  .btn-primary:hover { background: var(--green-mid); box-shadow: 0 4px 14px rgba(19,78,47,.35); transform: translateY(-1px); }
-  .btn-primary:active { transform: translateY(0); }
-  .btn-submit { background: var(--green); color: var(--white); font-size: 15px; padding: 14px 36px; box-shadow: 0 4px 16px rgba(19,78,47,.35); }
-  .btn-submit:hover { background: var(--green-mid); transform: translateY(-1px); }
+  .btn-primary:hover { background: var(--green-mid); transform: translateY(-1px); }
+  .btn-submit { font-size: 15px; padding: 14px 36px; box-shadow: 0 4px 16px rgba(19,78,47,.35); }
   .btn-submit:disabled { opacity: .6; cursor: not-allowed; transform: none; }
 
   /* Review */
@@ -415,9 +183,8 @@
   .review-item .ri-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; color: var(--gray-400); margin-bottom: 2px; }
   .review-item .ri-value { font-size: 14px; color: var(--gray-800); font-weight: 500; }
   .review-item.full { grid-column: 1 / -1; }
-  .review-total-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--gray-100); font-size: 14px; }
-  .review-total-row .tl { color: var(--gray-600); }
-  .review-total-row .tv { font-weight: 600; color: var(--gray-800); }
+  .review-total-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--gray-100); font-size: 14px; }
+  .review-total-row .tl { color: var(--gray-600); } .review-total-row .tv { font-weight: 600; }
   .review-grand-row { display: flex; justify-content: space-between; align-items: center; padding: 14px 18px; background: var(--green); border-radius: var(--radius-sm); margin-top: 8px; }
   .review-grand-row .tl { font-size: 14px; font-weight: 600; color: rgba(255,255,255,.8); text-transform: uppercase; letter-spacing: .5px; }
   .review-grand-row .tv { font-family: 'Lora', serif; font-size: 24px; font-weight: 700; color: #facc15; }
@@ -426,29 +193,26 @@
   #success-screen { display: none; animation: fadeIn .4s ease; }
   .success-card { background: var(--white); border-radius: var(--radius); padding: 48px 32px; text-align: center; box-shadow: var(--shadow-md); border: 1px solid var(--gray-200); }
   .success-icon { width: 72px; height: 72px; background: var(--green-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px; font-size: 32px; }
-  .success-po { display: inline-block; background: var(--green); color: #facc15; font-family: 'Lora', serif; font-size: 20px; font-weight: 700; padding: 8px 20px; border-radius: 6px; margin: 16px 0 8px; letter-spacing: .5px; }
+  .success-po { display: inline-block; background: var(--green); color: #facc15; font-family: 'Lora', serif; font-size: 20px; font-weight: 700; padding: 8px 20px; border-radius: 6px; margin: 16px 0 8px; }
   .success-title { font-family: 'Lora', serif; font-size: 28px; font-weight: 600; color: var(--green); margin-bottom: 12px; }
   .success-sub { font-size: 15px; color: var(--gray-600); max-width: 400px; margin: 0 auto 32px; line-height: 1.6; }
   .success-detail { font-size: 13px; color: var(--gray-400); }
 
-  /* Error / spinner */
+  /* Misc */
   .error-banner { background: var(--red-light); border: 1.5px solid #f5c6c6; border-radius: var(--radius-sm); padding: 12px 16px; font-size: 14px; color: var(--red); margin-bottom: 16px; display: none; }
   .error-banner.show { display: block; }
   .spinner { width: 18px; height: 18px; border: 2.5px solid rgba(255,255,255,.4); border-top-color: white; border-radius: 50%; animation: spin .7s linear infinite; display: none; }
   .btn-submit.loading .spinner { display: block; }
-  .btn-submit.loading .btn-text { opacity: .7; }
   .divider { height: 1px; background: var(--gray-100); margin: 20px 0; }
   .form-footer { text-align: center; font-size: 12px; color: var(--gray-400); margin-top: 32px; }
 </style>
 </head>
 <body>
 
-<!-- ══════════════════ AUTH LOADING ══════════════════ -->
-<div id="auth-loading">
-  <div class="auth-spinner"></div>
-</div>
+<!-- AUTH LOADING -->
+<div id="auth-loading"><div class="auth-spinner"></div></div>
 
-<!-- ══════════════════ LOGIN SCREEN ══════════════════ -->
+<!-- LOGIN SCREEN -->
 <div id="login-screen" style="display:none;">
   <div class="login-card">
     <div class="login-crest">ILS</div>
@@ -457,10 +221,7 @@
     <div class="login-divider"></div>
     <p class="login-prompt">Sign in with your ILS Microsoft account to access the Purchase Order form.</p>
     <button class="btn-microsoft" id="signin-btn" onclick="signIn()">
-      <div class="ms-logo">
-        <span class="q1"></span><span class="q2"></span>
-        <span class="q3"></span><span class="q4"></span>
-      </div>
+      <div class="ms-logo"><span class="q1"></span><span class="q2"></span><span class="q3"></span><span class="q4"></span></div>
       Sign in with Microsoft
     </button>
     <div class="login-error" id="login-error"></div>
@@ -468,9 +229,8 @@
   </div>
 </div>
 
-<!-- ══════════════════ APP SHELL ══════════════════ -->
+<!-- APP SHELL -->
 <div id="app-shell">
-
   <header class="site-header">
     <div class="header-crest">ILS</div>
     <div class="header-text">
@@ -488,7 +248,6 @@
   </header>
 
   <main class="container">
-
     <div class="progress-wrap" id="progress-wrap">
       <div class="progress-steps">
         <div class="step-pill active" id="spill-1"><div class="step-num">1</div><span class="step-label">Request</span></div>
@@ -500,61 +259,33 @@
 
     <div class="error-banner" id="error-banner">⚠ There was an error submitting your request. Please try again or contact the Technology Department.</div>
 
-    <!-- ══ STEP 1 ══ -->
+    <!-- STEP 1 -->
     <div class="form-step active" id="step-1">
       <div class="card">
         <div class="card-title"><span class="icon">📋</span> Request Information</div>
         <div class="card-sub">Basic details about who is submitting this purchase order.</div>
         <div class="field-row">
-          <div class="field" id="f-dateOfRequest">
-            <label>Date of Request <span class="req">*</span></label>
-            <input type="date" id="dateOfRequest">
-            <span class="err-msg">Required</span>
-          </div>
-          <div class="field" id="f-dateRequired">
-            <label>Date Required <span class="req">*</span></label>
-            <input type="date" id="dateRequired">
-            <span class="err-msg">Required</span>
-          </div>
+          <div class="field" id="f-dateOfRequest"><label>Date of Request <span class="req">*</span></label><input type="date" id="dateOfRequest"><span class="err-msg">Required</span></div>
+          <div class="field" id="f-dateRequired"><label>Date Required <span class="req">*</span></label><input type="date" id="dateRequired"><span class="err-msg">Required</span></div>
         </div>
         <div class="field-row">
-          <div class="field" id="f-requestedBy">
-            <label>Requested By <span class="req">*</span></label>
-            <input type="text" id="requestedBy" placeholder="Full name" readonly>
-            <span class="autofill-badge">✓ From Microsoft account</span>
-            <span class="err-msg">Required</span>
-          </div>
-          <div class="field" id="f-email">
-            <label>Email Address <span class="req">*</span></label>
-            <input type="email" id="email" placeholder="you@ilsroyals.com" readonly>
-            <span class="autofill-badge">✓ From Microsoft account</span>
-            <span class="err-msg">Valid email required</span>
-          </div>
+          <div class="field" id="f-requestedBy"><label>Requested By <span class="req">*</span></label><input type="text" id="requestedBy" placeholder="Full name" readonly><span class="autofill-badge">✓ From Microsoft account</span><span class="err-msg">Required</span></div>
+          <div class="field" id="f-email"><label>Email Address <span class="req">*</span></label><input type="email" id="email" placeholder="you@ilsroyals.com" readonly><span class="autofill-badge">✓ From Microsoft account</span><span class="err-msg">Required</span></div>
         </div>
         <div class="field-row">
           <div class="field" id="f-department">
             <label>Department <span class="req">*</span></label>
             <select id="department">
               <option value="">— Select department —</option>
-              <option>Science Department</option>
-              <option>Mathematics Department</option>
-              <option>English Department</option>
-              <option>Social Studies Department</option>
-              <option>Foreign Languages Department</option>
-              <option>Business &amp; Technology Department</option>
-              <option>Health Sciences Department</option>
-              <option>Visual Arts Department</option>
-              <option>Performing Arts Department</option>
-              <option>Media &amp; Communications</option>
-              <option>Athletics Department</option>
-              <option>Student Life &amp; Leadership</option>
-              <option>Service &amp; Special Interest</option>
-              <option>Finance / Accounting</option>
-              <option>Facilities / Maintenance</option>
-              <option>Technology / IT</option>
-              <option>Health Services</option>
-              <option>Library Services</option>
-              <option>Development / Fundraising</option>
+              <option>Science Department</option><option>Mathematics Department</option><option>English Department</option>
+              <option>Social Studies Department</option><option>Foreign Languages Department</option>
+              <option>Business &amp; Technology Department</option><option>Health Sciences Department</option>
+              <option>Visual Arts Department</option><option>Performing Arts Department</option>
+              <option>Media &amp; Communications</option><option>Athletics Department</option>
+              <option>Student Life &amp; Leadership</option><option>Service &amp; Special Interest</option>
+              <option>Finance / Accounting</option><option>Facilities / Maintenance</option>
+              <option>Technology / IT</option><option>Health Services</option>
+              <option>Library Services</option><option>Development / Fundraising</option>
             </select>
             <span class="err-msg">Required</span>
           </div>
@@ -572,71 +303,39 @@
             <span class="err-msg">Required</span>
           </div>
         </div>
-        <div class="nav-row">
-          <div></div>
-          <button class="btn btn-primary" onclick="goTo(2)">Next: Vendor Info →</button>
-        </div>
+        <div class="nav-row"><div></div><button class="btn btn-primary" onclick="goTo(2)">Next: Vendor Info →</button></div>
       </div>
     </div>
 
-    <!-- ══ STEP 2 ══ -->
+    <!-- STEP 2 -->
     <div class="form-step" id="step-2">
       <div class="card">
         <div class="card-title"><span class="icon">🏢</span> Vendor Information</div>
-        <div class="card-sub">Who are you purchasing from? Fill in the vendor's details.</div>
+        <div class="card-sub">Who are you purchasing from?</div>
         <div class="field-row">
-          <div class="field" id="f-vendor">
-            <label>Payable To / Vendor Name <span class="req">*</span></label>
-            <input type="text" id="vendor" placeholder="Company name">
-            <span class="err-msg">Required</span>
-          </div>
-          <div class="field" id="f-quoteNumber">
-            <label>Quote Number</label>
-            <input type="text" id="quoteNumber" placeholder="e.g. Q-12345">
-          </div>
+          <div class="field" id="f-vendor"><label>Payable To / Vendor Name <span class="req">*</span></label><input type="text" id="vendor" placeholder="Company name"><span class="err-msg">Required</span></div>
+          <div class="field"><label>Quote Number</label><input type="text" id="quoteNumber" placeholder="e.g. Q-12345"></div>
         </div>
         <div class="field-row single">
-          <div class="field" id="f-vendorAddress">
-            <label>Vendor Street Address <span class="req">*</span></label>
-            <input type="text" id="vendorAddress" placeholder="Street address">
-            <span class="err-msg">Required</span>
-          </div>
+          <div class="field" id="f-vendorAddress"><label>Vendor Street Address <span class="req">*</span></label><input type="text" id="vendorAddress" placeholder="Street address"><span class="err-msg">Required</span></div>
         </div>
         <div class="field-row">
-          <div class="field" id="f-cityStateZip">
-            <label>City, State, ZIP <span class="req">*</span></label>
-            <input type="text" id="cityStateZip" placeholder="Miami, FL 33133">
-            <span class="err-msg">Required</span>
-          </div>
-          <div class="field" id="f-stockNumber">
-            <label>Stock Number(s)</label>
-            <input type="text" id="stockNumber" placeholder="Optional">
-          </div>
+          <div class="field" id="f-cityStateZip"><label>City, State, ZIP <span class="req">*</span></label><input type="text" id="cityStateZip" placeholder="Miami, FL 33133"><span class="err-msg">Required</span></div>
+          <div class="field"><label>Stock Number(s)</label><input type="text" id="stockNumber" placeholder="Optional"></div>
         </div>
         <div class="field-row">
           <div class="field" id="f-terms">
             <label>Payment Terms <span class="req">*</span></label>
-            <select id="terms">
-              <option value="">— Select terms —</option>
-              <option>Net 15</option><option>Net 30</option>
-              <option>Net 60</option><option>Net 90</option>
-              <option>Due on Receipt</option>
-            </select>
+            <select id="terms"><option value="">— Select terms —</option><option>Net 15</option><option>Net 30</option><option>Net 60</option><option>Net 90</option><option>Due on Receipt</option></select>
             <span class="err-msg">Required</span>
           </div>
-          <div class="field">
-            <label>Ship To</label>
-            <input type="text" value="Immaculata-La Salle High School, 3601 S. Miami Ave, Miami FL 33133" readonly style="font-size:13px;">
-          </div>
+          <div class="field"><label>Ship To</label><input type="text" value="Immaculata-La Salle High School, 3601 S. Miami Ave, Miami FL 33133" readonly style="font-size:13px;"></div>
         </div>
-        <div class="nav-row">
-          <button class="btn btn-ghost" onclick="goTo(1)">← Back</button>
-          <button class="btn btn-primary" onclick="goTo(3)">Next: Order Details →</button>
-        </div>
+        <div class="nav-row"><button class="btn btn-ghost" onclick="goTo(1)">← Back</button><button class="btn btn-primary" onclick="goTo(3)">Next: Order Details →</button></div>
       </div>
     </div>
 
-    <!-- ══ STEP 3 ══ -->
+    <!-- STEP 3 -->
     <div class="form-step" id="step-3">
       <div class="card">
         <div class="card-title"><span class="icon">📦</span> Order Details</div>
@@ -644,29 +343,16 @@
         <div class="field-row single">
           <div class="field" id="f-orderDescription">
             <label>Order Description <span class="req">*</span> <span class="hint">— be specific about items, quantities, and purpose</span></label>
-            <textarea id="orderDescription" placeholder="e.g. 10x MacBook Air 13-inch (M3) for the computer lab refresh. Includes Apple Care+ for each unit."></textarea>
+            <textarea id="orderDescription" placeholder="e.g. 10x MacBook Air 13-inch for the computer lab refresh."></textarea>
             <span class="err-msg">Required</span>
           </div>
         </div>
         <div class="field-row thirds">
-          <div class="field" id="f-subtotal">
-            <label>Subtotal (Items) <span class="req">*</span></label>
-            <div class="currency-wrap"><input type="number" id="subtotal" placeholder="0.00" min="0" step="0.01" oninput="calcTotal()"></div>
-            <span class="err-msg">Required</span>
-          </div>
-          <div class="field">
-            <label>Shipping &amp; Handling</label>
-            <div class="currency-wrap"><input type="number" id="shippingCost" placeholder="0.00" min="0" step="0.01" oninput="calcTotal()"></div>
-          </div>
-          <div class="field">
-            <label>Additional Charges</label>
-            <div class="currency-wrap"><input type="number" id="additionalCharges" placeholder="0.00" min="0" step="0.01" oninput="calcTotal()"></div>
-          </div>
+          <div class="field" id="f-subtotal"><label>Subtotal <span class="req">*</span></label><div class="currency-wrap"><input type="number" id="subtotal" placeholder="0.00" min="0" step="0.01" oninput="calcTotal()"></div><span class="err-msg">Required</span></div>
+          <div class="field"><label>Shipping &amp; Handling</label><div class="currency-wrap"><input type="number" id="shippingCost" placeholder="0.00" min="0" step="0.01" oninput="calcTotal()"></div></div>
+          <div class="field"><label>Additional Charges</label><div class="currency-wrap"><input type="number" id="additionalCharges" placeholder="0.00" min="0" step="0.01" oninput="calcTotal()"></div></div>
         </div>
-        <div class="grand-total-box">
-          <span class="label">Grand Total</span>
-          <span class="amount" id="grandTotalDisplay">$0.00</span>
-        </div>
+        <div class="grand-total-box"><span class="label">Grand Total</span><span class="amount" id="grandTotalDisplay">$0.00</span></div>
         <div class="divider"></div>
         <div class="field-row single">
           <div class="field" id="f-supportingDoc">
@@ -681,18 +367,15 @@
             <span class="err-msg">A supporting PDF document is required</span>
           </div>
         </div>
-        <div class="nav-row">
-          <button class="btn btn-ghost" onclick="goTo(2)">← Back</button>
-          <button class="btn btn-primary" onclick="goTo(4)">Next: Review →</button>
-        </div>
+        <div class="nav-row"><button class="btn btn-ghost" onclick="goTo(2)">← Back</button><button class="btn btn-primary" onclick="goTo(4)">Next: Review →</button></div>
       </div>
     </div>
 
-    <!-- ══ STEP 4 ══ -->
+    <!-- STEP 4 -->
     <div class="form-step" id="step-4">
       <div class="card">
         <div class="card-title"><span class="icon">✅</span> Review &amp; Submit</div>
-        <div class="card-sub">Please review your purchase order before submitting. Once submitted it goes to Finance for approval.</div>
+        <div class="card-sub">Please review your purchase order before submitting.</div>
         <div id="review-content"></div>
         <div class="divider"></div>
         <div class="field-row single">
@@ -715,13 +398,13 @@
       </div>
     </div>
 
-    <!-- ══ SUCCESS ══ -->
+    <!-- SUCCESS -->
     <div id="success-screen">
       <div class="success-card">
         <div class="success-icon">🎉</div>
         <div class="success-title">Purchase Order Submitted!</div>
-        <div class="success-po" id="success-po-number">Generating PO number…</div>
-        <div class="success-sub">Your request has been received and sent to Finance for approval. You'll get an email confirmation shortly, and a second email once it's been reviewed.</div>
+        <div class="success-po" id="success-po-number">Submitted</div>
+        <div class="success-sub">Your request has been received and sent to Finance for approval. You'll get an email confirmation shortly.</div>
         <div class="success-detail">Approvers: Marlen Medina &amp; Katya Ore · Finance Department</div>
         <button class="btn btn-primary" style="margin-top:24px;" onclick="resetForm()">Submit Another PO</button>
       </div>
@@ -729,21 +412,20 @@
 
     <div class="form-footer">Immaculata-La Salle High School · Technology Department · Powered by Microsoft Power Automate</div>
   </main>
-</div><!-- end app-shell -->
+</div>
 
 <script>
-// ─────────────────────────────────────────────────────────────────
-// CONFIGURATION
-// ─────────────────────────────────────────────────────────────────
+// ─── CONFIG ───────────────────────────────────────────────────────
 const POWER_AUTOMATE_URL = "https://default8109e949d28146a4af75b18087925b.f4.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/dad1330dd0ba4b38a22191ea40358b53/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=gb4K_SLzC2skFm8kbTSenh2FiYGCO1HSC8icH47LbvY";
 
 const MSAL_CONFIG = {
   auth: {
     clientId: "22a5fda1-55c2-4815-ad14-16ab5ed95c60",
     authority: "https://login.microsoftonline.com/8109e949-d281-46a4-af75-b18087925bf4",
-    redirectUri: window.location.origin + window.location.pathname,
+    redirectUri: "https://orojas119.github.io/ils-po-form/",
+    navigateToLoginRequestUrl: true,
   },
-  cache: { cacheLocation: "sessionStorage", storeAuthStateInCookie: false }
+  cache: { cacheLocation: "sessionStorage", storeAuthStateInCookie: true }
 };
 
 const LOGIN_REQUEST = { scopes: ["openid", "profile", "email", "User.Read"] };
@@ -754,16 +436,17 @@ let currentStep = 1;
 let fileBase64 = null;
 let fileName = null;
 
-// ─────────────────────────────────────────────────────────────────
-// AUTH INIT
-// ─────────────────────────────────────────────────────────────────
+// ─── AUTH ─────────────────────────────────────────────────────────
 async function initAuth() {
   try {
     msalInstance = new msal.PublicClientApplication(MSAL_CONFIG);
     await msalInstance.initialize();
 
-    // Handle redirect response if coming back from login
-    await msalInstance.handleRedirectPromise();
+    const redirectResult = await msalInstance.handleRedirectPromise();
+    if (redirectResult && redirectResult.account) {
+      await loadUserAndShowApp(redirectResult.account);
+      return;
+    }
 
     const accounts = msalInstance.getAllAccounts();
     if (accounts.length > 0) {
@@ -772,35 +455,24 @@ async function initAuth() {
       showLoginScreen();
     }
   } catch (err) {
-    console.error("MSAL init error:", err);
+    console.error("Auth init error:", err);
     showLoginScreen();
   }
 }
 
 async function signIn() {
   const btn = document.getElementById('signin-btn');
-  const errEl = document.getElementById('login-error');
   btn.disabled = true;
-  btn.textContent = 'Signing in…';
-  errEl.classList.remove('show');
-
+  btn.textContent = 'Redirecting to Microsoft…';
   try {
-    const result = await msalInstance.loginPopup(LOGIN_REQUEST);
-    await loadUserAndShowApp(result.account);
+    await msalInstance.loginRedirect(LOGIN_REQUEST);
   } catch (err) {
     console.error("Login error:", err);
     btn.disabled = false;
     btn.innerHTML = `<div class="ms-logo"><span class="q1"></span><span class="q2"></span><span class="q3"></span><span class="q4"></span></div> Sign in with Microsoft`;
-
-    if (err.errorCode === 'user_cancelled') {
-      // user closed popup, no message needed
-    } else if (err.errorCode === 'access_denied') {
-      errEl.textContent = '⛔ Your account is not authorized to access this form. Contact the Technology Department.';
-      errEl.classList.add('show');
-    } else {
-      errEl.textContent = '⚠ Sign-in failed. Please try again or contact IT.';
-      errEl.classList.add('show');
-    }
+    const errEl = document.getElementById('login-error');
+    errEl.textContent = '⚠ Sign-in failed. Please try again or contact IT.';
+    errEl.classList.add('show');
   }
 }
 
@@ -811,33 +483,24 @@ async function loadUserAndShowApp(account) {
       headers: { Authorization: `Bearer ${tokenResp.accessToken}` }
     });
     const profile = await graphResp.json();
-
     const displayName = profile.displayName || account.name || '';
     const email = profile.mail || profile.userPrincipalName || account.username || '';
     const initials = displayName.split(' ').map(n => n[0]).join('').slice(0,2).toUpperCase();
-
-    // Autofill form fields
     document.getElementById('requestedBy').value = displayName;
     document.getElementById('email').value = email;
-
-    // Update header
     document.getElementById('header-name').textContent = displayName;
     document.getElementById('header-email').textContent = email;
     document.getElementById('header-avatar').textContent = initials;
-
-    showApp();
   } catch (err) {
     console.error("Graph error:", err);
-    // Still show the app even if Graph fails — fields just won't be prefilled
-    showApp();
   }
+  showApp();
 }
 
 async function signOut() {
   try {
-    await msalInstance.logoutPopup();
-  } catch(_) {}
-  showLoginScreen();
+    await msalInstance.logoutRedirect({ postLogoutRedirectUri: "https://orojas119.github.io/ils-po-form/" });
+  } catch(e) { console.error(e); }
 }
 
 function showLoginScreen() {
@@ -853,19 +516,13 @@ function showApp() {
   initForm();
 }
 
-// ─────────────────────────────────────────────────────────────────
-// FORM INIT
-// ─────────────────────────────────────────────────────────────────
+// ─── FORM ─────────────────────────────────────────────────────────
 function initForm() {
-  const today = new Date().toISOString().slice(0, 10);
-  document.getElementById('dateOfRequest').value = today;
+  document.getElementById('dateOfRequest').value = new Date().toISOString().slice(0,10);
   buildFADropdown();
   setupFADropdown();
 }
 
-// ─────────────────────────────────────────────────────────────────
-// FINANCIAL ACCOUNT DROPDOWN
-// ─────────────────────────────────────────────────────────────────
 const FA_GROUPS = {
   "Financial Accounts": ["Checking Account – Special","Home & School Bank Account","Petty Cash","Regular Savings","Archdiocese Education Fund – Corpus","Capital Maintenance (1-Year)","Insurance Reserve (1-Year)","Prepaid Tuition/Registration (1-Year)","Prepaid Expenses","Prepaid Tuition","Payroll Taxes Payable","Health and Life Insurance Payable","Net Wages Payable","Other Accounts Payable","Unrestricted Net Assets","Permanently Restricted Net Assets","Loan – Archdiocese of Miami"],
   "Assets & Facilities": ["Land – Main Site","Buildings and Permanent Structures","Furnishings, Equipment, and Vehicles","Library Books – Initial Purchase","Arti-Grass","Ernie Renella Fund"],
@@ -879,14 +536,9 @@ function buildFADropdown() {
   const list = document.getElementById('fa-list');
   list.innerHTML = '';
   for (const [group, items] of Object.entries(FA_GROUPS)) {
-    const g = document.createElement('div');
-    g.className = 'opt-group';
-    g.textContent = group;
-    list.appendChild(g);
+    const g = document.createElement('div'); g.className='opt-group'; g.textContent=group; list.appendChild(g);
     items.forEach(item => {
-      const o = document.createElement('div');
-      o.className = 'opt';
-      o.textContent = item;
+      const o = document.createElement('div'); o.className='opt'; o.textContent=item;
       o.addEventListener('mousedown', e => { e.preventDefault(); selectFA(item); });
       list.appendChild(o);
     });
@@ -894,102 +546,88 @@ function buildFADropdown() {
 }
 
 function setupFADropdown() {
-  const display  = document.getElementById('financialAccount-display');
-  const dropdown = document.getElementById('fa-dropdown');
-  const search   = document.getElementById('fa-search');
+  const display=document.getElementById('financialAccount-display');
+  const dropdown=document.getElementById('fa-dropdown');
+  const search=document.getElementById('fa-search');
   display.addEventListener('click', () => {
     dropdown.classList.toggle('open');
-    if (dropdown.classList.contains('open')) { search.value = ''; filterFA(''); setTimeout(() => search.focus(), 50); }
+    if (dropdown.classList.contains('open')) { search.value=''; filterFA(''); setTimeout(()=>search.focus(),50); }
   });
-  search.addEventListener('input', () => filterFA(search.value));
-  document.addEventListener('click', e => { if (!e.target.closest('.search-select-wrap')) dropdown.classList.remove('open'); });
+  search.addEventListener('input', ()=>filterFA(search.value));
+  document.addEventListener('click', e => { if(!e.target.closest('.search-select-wrap')) dropdown.classList.remove('open'); });
 }
 
 function filterFA(q) {
   q = q.toLowerCase();
   document.getElementById('fa-list').querySelectorAll('.opt').forEach(o => o.classList.toggle('hidden', !o.textContent.toLowerCase().includes(q)));
   document.getElementById('fa-list').querySelectorAll('.opt-group').forEach(g => {
-    let next = g.nextElementSibling, allHidden = true;
-    while (next && !next.classList.contains('opt-group')) { if (!next.classList.contains('hidden')) allHidden = false; next = next.nextElementSibling; }
-    g.style.display = allHidden ? 'none' : '';
+    let next=g.nextElementSibling, all=true;
+    while(next&&!next.classList.contains('opt-group')){if(!next.classList.contains('hidden'))all=false; next=next.nextElementSibling;}
+    g.style.display=all?'none':'';
   });
 }
 
 function selectFA(value) {
-  document.getElementById('financialAccount').value = value;
-  document.getElementById('financialAccount-display').value = value;
+  document.getElementById('financialAccount').value=value;
+  document.getElementById('financialAccount-display').value=value;
   document.getElementById('fa-dropdown').classList.remove('open');
   document.getElementById('f-financialAccount').classList.remove('has-error');
 }
 
-// ─────────────────────────────────────────────────────────────────
-// CALCULATIONS & FILE
-// ─────────────────────────────────────────────────────────────────
 function calcTotal() {
-  const t = (parseFloat(document.getElementById('subtotal').value)||0) + (parseFloat(document.getElementById('shippingCost').value)||0) + (parseFloat(document.getElementById('additionalCharges').value)||0);
-  document.getElementById('grandTotalDisplay').textContent = '$' + t.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
+  const t=(parseFloat(document.getElementById('subtotal').value)||0)+(parseFloat(document.getElementById('shippingCost').value)||0)+(parseFloat(document.getElementById('additionalCharges').value)||0);
+  document.getElementById('grandTotalDisplay').textContent='$'+t.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
 }
 
 function handleFile(input) {
-  const file = input.files[0];
-  if (!file) return;
-  if (file.size > 10*1024*1024) { alert('File too large. Max 10MB.'); input.value=''; return; }
-  fileName = file.name;
-  document.getElementById('file-name-display').textContent = '📄 ' + file.name;
+  const file=input.files[0]; if(!file) return;
+  if(file.size>10*1024*1024){alert('File too large. Max 10MB.'); input.value=''; return;}
+  fileName=file.name;
+  document.getElementById('file-name-display').textContent='📄 '+file.name;
   document.getElementById('file-zone').classList.add('has-file');
   document.getElementById('f-supportingDoc').classList.remove('has-error');
-  const r = new FileReader();
-  r.onload = e => { fileBase64 = e.target.result.split(',')[1]; };
-  r.readAsDataURL(file);
+  const r=new FileReader(); r.onload=e=>{fileBase64=e.target.result.split(',')[1];}; r.readAsDataURL(file);
 }
 
-// ─────────────────────────────────────────────────────────────────
-// VALIDATION
-// ─────────────────────────────────────────────────────────────────
 function validate(step) {
-  let valid = true;
-  const required = { 1:['dateOfRequest','dateRequired','requestedBy','email','department','financialAccount'], 2:['vendor','vendorAddress','cityStateZip','terms'], 3:['orderDescription','subtotal'], 4:[] };
-  required[step].forEach(id => {
-    const el = document.getElementById(id), wrap = document.getElementById('f-'+id);
-    if (!el||!wrap) return;
-    if (!el.value.trim()) { wrap.classList.add('has-error'); el.classList.add('error'); valid = false; }
-    else { wrap.classList.remove('has-error'); el.classList.remove('error'); }
+  let valid=true;
+  const required={1:['dateOfRequest','dateRequired','requestedBy','email','department','financialAccount'],2:['vendor','vendorAddress','cityStateZip','terms'],3:['orderDescription','subtotal'],4:[]};
+  required[step].forEach(id=>{
+    const el=document.getElementById(id), wrap=document.getElementById('f-'+id);
+    if(!el||!wrap) return;
+    if(!el.value.trim()){wrap.classList.add('has-error'); el.classList.add('error'); valid=false;}
+    else{wrap.classList.remove('has-error'); el.classList.remove('error');}
   });
-  if (step===3 && !fileBase64) { document.getElementById('f-supportingDoc').classList.add('has-error'); valid = false; }
-  if (step===4) {
-    const cb = document.getElementById('taxCert'), wrap = document.getElementById('f-taxCert');
-    if (!cb.checked) { wrap.classList.add('has-error'); valid = false; }
-    else { wrap.classList.remove('has-error'); }
+  if(step===3&&!fileBase64){document.getElementById('f-supportingDoc').classList.add('has-error'); valid=false;}
+  if(step===4){
+    const cb=document.getElementById('taxCert'), wrap=document.getElementById('f-taxCert');
+    if(!cb.checked){wrap.classList.add('has-error'); valid=false;}else{wrap.classList.remove('has-error');}
   }
   return valid;
 }
 
-// ─────────────────────────────────────────────────────────────────
-// NAVIGATION
-// ─────────────────────────────────────────────────────────────────
 function goTo(step) {
-  if (step > currentStep && !validate(currentStep)) return;
+  if(step>currentStep&&!validate(currentStep)) return;
   document.getElementById('step-'+currentStep).classList.remove('active');
   document.getElementById('spill-'+currentStep).classList.remove('active');
-  if (step > currentStep) document.getElementById('spill-'+currentStep).classList.add('done');
+  if(step>currentStep) document.getElementById('spill-'+currentStep).classList.add('done');
   else document.getElementById('spill-'+step).classList.remove('done');
-  currentStep = step;
+  currentStep=step;
   document.getElementById('step-'+currentStep).classList.add('active');
   document.getElementById('spill-'+currentStep).classList.add('active');
-  if (step === 4) buildReview();
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  if(step===4) buildReview();
+  window.scrollTo({top:0,behavior:'smooth'});
 }
 
-// ─────────────────────────────────────────────────────────────────
-// REVIEW
-// ─────────────────────────────────────────────────────────────────
-function v(id) { const el=document.getElementById(id); return el?(el.value||'—'):'—'; }
-function curr(id) { return '$'+(parseFloat(document.getElementById(id)?.value)||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+function v(id){const el=document.getElementById(id); return el?(el.value||'—'):'—';}
+function curr(id){return '$'+(parseFloat(document.getElementById(id)?.value)||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
 
 function buildReview() {
-  const sub=parseFloat(document.getElementById('subtotal').value)||0, sh=parseFloat(document.getElementById('shippingCost').value)||0, add=parseFloat(document.getElementById('additionalCharges').value)||0;
-  const gf = '$'+(sub+sh+add).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
-  document.getElementById('review-content').innerHTML = `
+  const sub=parseFloat(document.getElementById('subtotal').value)||0;
+  const sh=parseFloat(document.getElementById('shippingCost').value)||0;
+  const add=parseFloat(document.getElementById('additionalCharges').value)||0;
+  const gf='$'+(sub+sh+add).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+  document.getElementById('review-content').innerHTML=`
     <div class="review-section-title">Request Details</div>
     <div class="review-grid">
       <div class="review-item"><div class="ri-label">Date of Request</div><div class="ri-value">${v('dateOfRequest')}</div></div>
@@ -1019,64 +657,57 @@ function buildReview() {
     <div class="review-grand-row"><span class="tl">Grand Total</span><span class="tv">${gf}</span></div>`;
 }
 
-// ─────────────────────────────────────────────────────────────────
-// SUBMIT
-// ─────────────────────────────────────────────────────────────────
 async function submitForm() {
-  if (!validate(4)) return;
-  const sub=parseFloat(document.getElementById('subtotal').value)||0, sh=parseFloat(document.getElementById('shippingCost').value)||0, add=parseFloat(document.getElementById('additionalCharges').value)||0;
-  const payload = { dateOfRequest:v('dateOfRequest'), requestedBy:v('requestedBy'), email:v('email'), department:v('department'), financialAccount:v('financialAccount'), dateRequired:v('dateRequired'), vendor:v('vendor'), vendorAddress:v('vendorAddress'), cityStateZip:v('cityStateZip'), quoteNumber:v('quoteNumber'), terms:v('terms'), stockNumber:v('stockNumber'), orderDescription:v('orderDescription'), subtotal:sub, shippingCost:sh, additionalCharges:add, grandTotal:sub+sh+add, taxExemptCertified:true, fileName:fileName||'', fileBase64:fileBase64||'' };
-  const btn = document.getElementById('submit-btn');
-  btn.disabled = true; btn.classList.add('loading');
+  if(!validate(4)) return;
+  const sub=parseFloat(document.getElementById('subtotal').value)||0;
+  const sh=parseFloat(document.getElementById('shippingCost').value)||0;
+  const add=parseFloat(document.getElementById('additionalCharges').value)||0;
+  const payload={dateOfRequest:v('dateOfRequest'),requestedBy:v('requestedBy'),email:v('email'),department:v('department'),financialAccount:v('financialAccount'),dateRequired:v('dateRequired'),vendor:v('vendor'),vendorAddress:v('vendorAddress'),cityStateZip:v('cityStateZip'),quoteNumber:v('quoteNumber'),terms:v('terms'),stockNumber:v('stockNumber'),orderDescription:v('orderDescription'),subtotal:sub,shippingCost:sh,additionalCharges:add,grandTotal:sub+sh+add,taxExemptCertified:true,fileName:fileName||'',fileBase64:fileBase64||''};
+  const btn=document.getElementById('submit-btn');
+  btn.disabled=true; btn.classList.add('loading');
   document.getElementById('error-banner').classList.remove('show');
   try {
-    if (POWER_AUTOMATE_URL === "YOUR_POWER_AUTOMATE_HTTP_TRIGGER_URL_HERE") {
-      await new Promise(r => setTimeout(r, 1800));
-      showSuccess("Demo Mode — PO-2026-XXXXX");
-      return;
-    }
-    const res = await fetch(POWER_AUTOMATE_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) });
-    if (!res.ok) throw new Error('HTTP '+res.status);
-    let poNumber = 'Submitted';
-    try { const d = await res.json(); if(d.poNumber) poNumber = d.poNumber; } catch(_){}
+    const res=await fetch(POWER_AUTOMATE_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    let poNumber='Submitted';
+    try{const d=await res.json(); if(d.poNumber) poNumber=d.poNumber;}catch(_){}
     showSuccess(poNumber);
   } catch(err) {
     console.error(err);
     document.getElementById('error-banner').classList.add('show');
-    btn.disabled = false; btn.classList.remove('loading');
+    btn.disabled=false; btn.classList.remove('loading');
     window.scrollTo({top:0,behavior:'smooth'});
   }
 }
 
 function showSuccess(poNumber) {
-  document.getElementById('progress-wrap').style.display = 'none';
-  document.querySelectorAll('.form-step').forEach(s => s.style.display = 'none');
-  document.getElementById('success-po-number').textContent = poNumber;
-  document.getElementById('success-screen').style.display = 'block';
+  document.getElementById('progress-wrap').style.display='none';
+  document.querySelectorAll('.form-step').forEach(s=>s.style.display='none');
+  document.getElementById('success-po-number').textContent=poNumber;
+  document.getElementById('success-screen').style.display='block';
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
 function resetForm() {
-  ['dateOfRequest','dateRequired','requestedBy','email','department','financialAccount','vendor','quoteNumber','vendorAddress','cityStateZip','stockNumber','terms','orderDescription','subtotal','shippingCost','additionalCharges'].forEach(id => { const el=document.getElementById(id); if(el && !el.readOnly) el.value=''; });
-  document.getElementById('financialAccount-display').value = '';
-  document.getElementById('taxCert').checked = false;
-  document.getElementById('grandTotalDisplay').textContent = '$0.00';
+  ['dateOfRequest','dateRequired','department','financialAccount','vendor','quoteNumber','vendorAddress','cityStateZip','stockNumber','terms','orderDescription','subtotal','shippingCost','additionalCharges'].forEach(id=>{const el=document.getElementById(id); if(el&&!el.readOnly) el.value='';});
+  document.getElementById('financialAccount-display').value='';
+  document.getElementById('taxCert').checked=false;
+  document.getElementById('grandTotalDisplay').textContent='$0.00';
   document.getElementById('file-zone').classList.remove('has-file');
-  document.getElementById('file-name-display').textContent = '';
+  document.getElementById('file-name-display').textContent='';
   fileBase64=null; fileName=null;
-  document.getElementById('dateOfRequest').value = new Date().toISOString().slice(0,10);
-  document.getElementById('success-screen').style.display = 'none';
-  document.getElementById('progress-wrap').style.display = '';
-  document.querySelectorAll('.form-step').forEach(s => s.style.display = '');
-  currentStep = 1;
-  for(let i=1;i<=4;i++) { document.getElementById('step-'+i).classList.remove('active'); document.getElementById('spill-'+i).classList.remove('active','done'); }
+  document.getElementById('dateOfRequest').value=new Date().toISOString().slice(0,10);
+  document.getElementById('success-screen').style.display='none';
+  document.getElementById('progress-wrap').style.display='';
+  document.querySelectorAll('.form-step').forEach(s=>s.style.display='');
+  currentStep=1;
+  for(let i=1;i<=4;i++){document.getElementById('step-'+i).classList.remove('active'); document.getElementById('spill-'+i).classList.remove('active','done');}
   document.getElementById('step-1').classList.add('active');
   document.getElementById('spill-1').classList.add('active');
   document.getElementById('submit-btn').disabled=false;
   document.getElementById('submit-btn').classList.remove('loading');
 }
 
-// ── BOOT ──
 initAuth();
 </script>
 </body>
