@@ -422,7 +422,7 @@ const MSAL_CONFIG = {
   auth: {
     clientId: "22a5fda1-55c2-4815-ad14-16ab5ed95c60",
     authority: "https://login.microsoftonline.com/8109e949-d281-46a4-af75-b18087925bf4",
-    redirectUri: "https://orojas119.github.io/ils-po-form/",
+    redirectUri: "https://po.ilsroyals.com/",
     navigateToLoginRequestUrl: true,
   },
   cache: { cacheLocation: "sessionStorage", storeAuthStateInCookie: true }
@@ -499,7 +499,7 @@ async function loadUserAndShowApp(account) {
 
 async function signOut() {
   try {
-    await msalInstance.logoutRedirect({ postLogoutRedirectUri: "https://orojas119.github.io/ils-po-form/" });
+    await msalInstance.logoutRedirect({ postLogoutRedirectUri: "https://po.ilsroyals.com/" });
   } catch(e) { console.error(e); }
 }
 

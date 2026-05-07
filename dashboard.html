@@ -208,7 +208,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--gray-50);color:
       <div class="header-title">Finance Dashboard</div>
     </div>
     <div class="header-right">
-      <a href="https://orojas119.github.io/ils-po-form/" class="header-link">← PO Form</a>
+      <a href="https://po.ilsroyals.com/" class="header-link">← PO Form</a>
       <span class="user-name-sm" id="header-name"></span>
       <div class="user-avatar" id="header-avatar">?</div>
       <button class="header-link" onclick="signOut()">Sign out</button>
@@ -365,7 +365,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--gray-50);color:
 const APPROVAL_FLOW_URL = "YOUR_APPROVAL_HANDLER_FLOW_URL_HERE";
 const ALLOWED_EMAILS = ["mmedina@ilsroyals.com","kore@ilsroyals.com","techdepartment@ilsroyals.com","orojas@ilsroyals.com"];
 const MSAL_CONFIG = {
-  auth:{clientId:"22a5fda1-55c2-4815-ad14-16ab5ed95c60",authority:"https://login.microsoftonline.com/8109e949-d281-46a4-af75-b18087925bf4",redirectUri:"https://orojas119.github.io/ils-po-form/dashboard.html",navigateToLoginRequestUrl:true},
+  auth:{clientId:"22a5fda1-55c2-4815-ad14-16ab5ed95c60",authority:"https://login.microsoftonline.com/8109e949-d281-46a4-af75-b18087925bf4",redirectUri:"https://po.ilsroyals.com/dashboard.html",navigateToLoginRequestUrl:true},
   cache:{cacheLocation:"sessionStorage",storeAuthStateInCookie:true}
 };
 const LOGIN_REQUEST={scopes:["openid","profile","email","User.Read","Sites.Read.All"]};
@@ -405,7 +405,7 @@ async function handleLogin(account){
   await loadData();
 }
 
-async function signOut(){try{await msalInstance.logoutRedirect({postLogoutRedirectUri:"https://orojas119.github.io/ils-po-form/dashboard.html"});}catch(e){console.error(e);}}
+async function signOut(){try{await msalInstance.logoutRedirect({postLogoutRedirectUri:"https://po.ilsroyals.com/dashboard.html"});}catch(e){console.error(e);}}
 
 function show(id){
   ['auth-loading','login-screen','denied-screen','dashboard'].forEach(s=>{
