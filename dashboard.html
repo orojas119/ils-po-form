@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Finance Dashboard — ILS Royals</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@azure/msal-browser@2.38.0/lib/msal-browser.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root {
+  --green:        #134e2f;
+  --green-mid:    #1a6b3f;
+  --green-light:  #e8f5ee;
+  --green-pale:   #f4faf7;
+  --green-chart:  rgba(19,78,47,0.9);
+  --gold:         #c49a1a;
+  --gold-light:   #fef9e7;
+  --red:          #dc2626;
+  --red-light:    #fef2f2;
+  --orange:       #d97706;
+  --orange-light: #fffbeb;
+  --gray-50:      #f9fafb;
+  --gray-100:     #f3f4f6;
+  --gray-200:     #e5e7eb;
+  --gray-300:     #d1d5db;
+  --gray-400:     #9ca3af;
+  --gray-500:     #6b7280;
+  --gray-600:     #4b5563;
+  --gray-800:     #1f2937;
+  --white:        #ffffff;
+  --shadow-sm:    0 1px 3px rgba(0,0,0,.07), 0 1px 2px rgba(0,0,0,.04);
+  --shadow-md:    0 4px 16px rgba(19,78,47,.08), 0 2px 6px rgba(0,0,0,.04);
+  --shadow-lg:    0 12px 40px rgba(19,78,47,.12), 0 4px 12px rgba(0,0,0,.06);
+  --radius:       14px;
+  --radius-sm:    8px;
+  --transition:   all .2s ease;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--gray-50); color: var(--gray-800); min-height: 100vh; font-size: 14px; line-height: 1.6; }
+
+/* ── AUTH SCREENS ─────────────────────────────────────────────── */
+.auth-screen { min-height: 100vh; background: var(--green); display: flex; align-items: center; justify-content: center; padding: 24px; }
+.auth-card { background: rgba(255,255,255,.97); border-radius: 20px; padding: 52px 44px; max-width: 420px; width: 100%; text-align: center; box-shadow: 0 24px 80px rgba(0,0,0,.3); animation: fadeUp .4s ease; }
+@keyframes fadeUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+.auth-crest { width: 68px; height: 68px; background: var(--green); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; font-family: 'Lora', serif; font-size: 26px; font-weight: 700; color: #facc15; box-shadow: 0 8px 24px rgba(19,78,47,.35); }
+.auth-school { font-family: 'Lora', serif; font-size: 18px; font-weight: 700; color: var(--green); margin-bottom: 4px; }
+.auth-sub { font-size: 12px; color: var(--gray-400); text-transform: uppercase; letter-spacing: .8px; margin-bottom: 32px; }
+.auth-divider { height: 1px; background: var(--gray-100); margin: 0 0 24px; }
+.auth-desc { font-size: 14px; color: var(--gray-600); margin-bottom: 20px; line-height: 1.5; }
+.btn-ms { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; padding: 12px 20px; background: #0078d4; color: white; border: none; border-radius: var(--radius-sm); font-family: 'Plus Jakarta Sans', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; transition: var(--transition); box-shadow: 0 2px 8px rgba(0,120,212,.3); }
+.btn-ms:hover { background: #006bbf; transform: translateY(-1px); }
+.btn-ms:disabled { opacity: .6; cursor: not-allowed; transform: none; }
+.ms-logo { width: 18px; height: 18px; display: grid; grid-template-columns: 1fr 1fr; gap: 2px; flex-shrink: 0; }
+.ms-logo span { display: block; border-radius: 1px; }
+.ms-logo .q1{background:#f25022;} .ms-logo .q2{background:#7fba00;} .ms-logo .q3{background:#00a4ef;} .ms-logo .q4{background:#ffb900;}
+.auth-notice { margin-top: 16px; font-size: 11px; color: var(--gray-400); }
+.auth-spinner { width: 36px; height: 36px; border: 3px solid rgba(255,255,255,.2); border-top-color: #facc15; border-radius: 50%; animation: spin .8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.denied-icon { font-size: 48px; margin-bottom: 16px; }
+.denied-title { font-family: 'Lora', serif; font-size: 20px; font-weight: 600; color: var(--red); margin-bottom: 8px; }
+.denied-sub { font-size: 13px; color: var(--gray-600); margin-bottom: 20px; line-height: 1.5; }
+.btn-outline { padding: 10px 20px; border-radius: var(--radius-sm); background: transparent; border: 1.5px solid var(--green); color: var(--green); font-family: 'Plus Jakarta Sans', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; transition: var(--transition); }
+.btn-outline:hover { background: var(--green); color: white; }
+
+/* ── HEADER ───────────────────────────────────────────────────── */
+.site-header { background: var(--green); padding: 14px 28px; display: flex; align-items: center; gap: 16px; box-shadow: 0 2px 12px rgba(0,0,0,.18); position: sticky; top: 0; z-index: 100; }
+.header-crest { width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,.12); border: 2px solid rgba(196,154,26,.5); display: flex; align-items: center; justify-content: center; font-family: 'Lora', serif; font-size: 16px; font-weight: 700; color: #facc15; flex-shrink: 0; }
+.header-text { flex: 1; }
+.header-school { font-family: 'Lora', serif; font-size: 14px; font-weight: 600; color: #facc15; line-height: 1.2; }
+.header-title { font-size: 11px; color: rgba(255,255,255,.6); letter-spacing: .5px; text-transform: uppercase; }
+.header-right { display: flex; align-items: center; gap: 12px; }
+.header-link { padding: 6px 14px; background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.2); border-radius: 6px; color: rgba(255,255,255,.8); font-size: 12px; font-weight: 500; cursor: pointer; text-decoration: none; transition: var(--transition); }
+.header-link:hover { background: rgba(255,255,255,.18); color: white; }
+.user-avatar { width: 32px; height: 32px; border-radius: 50%; background: rgba(255,255,255,.15); border: 1.5px solid rgba(196,154,26,.5); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: #facc15; flex-shrink: 0; }
+.user-name-sm { font-size: 12px; font-weight: 500; color: rgba(255,255,255,.8); max-width: 140px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+@media (max-width: 600px) { .user-name-sm { display: none; } }
+
+/* ── DASHBOARD SHELL ──────────────────────────────────────────── */
+#dashboard { display: none; }
+.container { max-width: 1200px; margin: 0 auto; padding: 28px 20px 60px; }
+
+/* ── LOADING / ERROR STATES ───────────────────────────────────── */
+.data-loading { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; padding: 80px 20px; }
+.data-loading-spinner { width: 40px; height: 40px; border: 3px solid var(--gray-200); border-top-color: var(--green); border-radius: 50%; animation: spin .8s linear infinite; }
+.data-loading p { font-size: 14px; color: var(--gray-500); }
+.empty-state { text-align: center; padding: 48px 20px; color: var(--gray-400); }
+.empty-state .empty-icon { font-size: 40px; margin-bottom: 12px; }
+.empty-state p { font-size: 14px; }
+
+/* ── HERO SECTION ─────────────────────────────────────────────── */
+.hero { padding: 8px 0 24px; }
+.hero-label { font-size: 12px; text-transform: uppercase; letter-spacing: .8px; font-weight: 600; color: var(--gray-500); margin-bottom: 6px; }
+.hero-amount { font-family: 'Lora', serif; font-size: clamp(36px, 6vw, 56px); font-weight: 700; color: var(--gray-800); line-height: 1; margin-bottom: 6px; letter-spacing: -1px; }
+.hero-meta { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; flex-wrap: wrap; }
+.hero-change { font-size: 15px; font-weight: 600; color: var(--green); }
+.hero-period-label { font-size: 13px; color: var(--gray-500); }
+.period-tabs { display: flex; gap: 4px; flex-wrap: wrap; }
+.period-tab { padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 600; border: none; cursor: pointer; transition: var(--transition); background: var(--white); color: var(--gray-600); box-shadow: var(--shadow-sm); border: 1.5px solid var(--gray-200); }
+.period-tab:hover { border-color: var(--green); color: var(--green); }
+.period-tab.active { background: var(--green); color: var(--white); border-color: var(--green); box-shadow: 0 2px 8px rgba(19,78,47,.25); }
+
+/* ── CARDS ────────────────────────────────────────────────────── */
+.card { background: var(--white); border-radius: var(--radius); padding: 24px; box-shadow: var(--shadow-sm); border: 1px solid var(--gray-200); }
+.card-title { font-family: 'Lora', serif; font-size: 16px; font-weight: 600; color: var(--green); margin-bottom: 4px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.card-sub { font-size: 12px; color: var(--gray-500); margin-bottom: 20px; }
+
+/* ── CHART CARD ───────────────────────────────────────────────── */
+.chart-card { margin-bottom: 24px; }
+.chart-wrap { position: relative; height: 240px; }
+
+/* ── KPI CARDS ────────────────────────────────────────────────── */
+.kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+@media (max-width: 800px) { .kpi-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 480px) { .kpi-grid { grid-template-columns: 1fr 1fr; } }
+.kpi-card { background: var(--white); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow-sm); border: 1px solid var(--gray-200); transition: var(--transition); }
+.kpi-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.kpi-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; margin-bottom: 12px; }
+.kpi-icon.green  { background: var(--green-light); }
+.kpi-icon.gold   { background: var(--gold-light); }
+.kpi-icon.blue   { background: #eff6ff; }
+.kpi-icon.orange { background: var(--orange-light); }
+.kpi-value { font-family: 'Lora', serif; font-size: 24px; font-weight: 700; color: var(--gray-800); line-height: 1; margin-bottom: 4px; }
+.kpi-label { font-size: 12px; color: var(--gray-500); font-weight: 500; text-transform: uppercase; letter-spacing: .4px; }
+
+/* ── BOTTOM GRID ──────────────────────────────────────────────── */
+.bottom-grid { display: grid; grid-template-columns: 1fr 1.6fr; gap: 20px; margin-bottom: 20px; }
+@media (max-width: 900px) { .bottom-grid { grid-template-columns: 1fr; } }
+.dept-chart-wrap { position: relative; height: 260px; }
+
+/* ── TOP VENDORS ──────────────────────────────────────────────── */
+.vendor-list { display: flex; flex-direction: column; gap: 10px; }
+.vendor-row { display: flex; align-items: center; gap: 12px; }
+.vendor-rank { width: 22px; height: 22px; border-radius: 50%; background: var(--green-light); color: var(--green); font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.vendor-name { flex: 1; font-size: 13px; font-weight: 500; color: var(--gray-800); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.vendor-bar-wrap { flex: 1; height: 6px; background: var(--gray-100); border-radius: 3px; overflow: hidden; }
+.vendor-bar { height: 100%; background: var(--green); border-radius: 3px; transition: width .6s ease; }
+.vendor-amount { font-size: 13px; font-weight: 600; color: var(--gray-800); text-align: right; flex-shrink: 0; min-width: 70px; }
+
+/* ── PO LIST ──────────────────────────────────────────────────── */
+.po-list-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+.po-list-title { font-family: 'Lora', serif; font-size: 16px; font-weight: 600; color: var(--green); }
+.btn-export { padding: 6px 14px; background: var(--green-light); border: 1.5px solid var(--green); border-radius: 6px; color: var(--green); font-family: 'Plus Jakarta Sans', sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; transition: var(--transition); }
+.btn-export:hover { background: var(--green); color: white; }
+.po-search { width: 100%; padding: 8px 12px; border: 1.5px solid var(--gray-200); border-radius: var(--radius-sm); font-family: 'Plus Jakarta Sans', sans-serif; font-size: 13px; color: var(--gray-800); outline: none; transition: var(--transition); margin-bottom: 12px; }
+.po-search:focus { border-color: var(--green); box-shadow: 0 0 0 3px rgba(19,78,47,.08); }
+.po-table-wrap { overflow-y: auto; max-height: 340px; }
+.po-table { width: 100%; border-collapse: collapse; }
+.po-table th { position: sticky; top: 0; background: var(--gray-50); padding: 8px 12px; text-align: left; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--gray-500); border-bottom: 1px solid var(--gray-200); white-space: nowrap; }
+.po-table td { padding: 10px 12px; border-bottom: 1px solid var(--gray-100); font-size: 13px; vertical-align: middle; }
+.po-table tr:last-child td { border-bottom: none; }
+.po-table tr { cursor: pointer; transition: background .12s; }
+.po-table tr:hover td { background: var(--green-pale); }
+.po-num { font-weight: 600; color: var(--green); font-size: 12px; }
+.po-requester { color: var(--gray-800); font-weight: 500; }
+.po-dept { color: var(--gray-500); font-size: 12px; max-width: 120px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.po-amount { font-weight: 600; color: var(--gray-800); text-align: right; }
+.status-badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; white-space: nowrap; }
+.status-badge.approved  { background: #dcfce7; color: #166534; }
+.status-badge.pending   { background: var(--gold-light); color: #854d0e; }
+.status-badge.rejected  { background: var(--red-light); color: #991b1b; }
+
+/* ── MODAL ────────────────────────────────────────────────────── */
+.modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,.5); backdrop-filter: blur(4px); z-index: 500; display: none; align-items: center; justify-content: center; padding: 20px; animation: fadeIn .2s ease; }
+.modal-backdrop.open { display: flex; }
+@keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+.modal { background: var(--white); border-radius: var(--radius); width: 100%; max-width: 600px; max-height: 90vh; overflow-y: auto; box-shadow: var(--shadow-lg); animation: slideUp .25s ease; }
+@keyframes slideUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+.modal-header { background: var(--green); padding: 20px 24px; display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; border-radius: var(--radius) var(--radius) 0 0; }
+.modal-po-num { font-family: 'Lora', serif; font-size: 22px; font-weight: 700; color: #facc15; }
+.modal-requester { font-size: 13px; color: rgba(255,255,255,.7); margin-top: 2px; }
+.modal-close { width: 32px; height: 32px; border-radius: 50%; background: rgba(255,255,255,.15); border: none; color: white; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: var(--transition); flex-shrink: 0; line-height: 1; }
+.modal-close:hover { background: rgba(255,255,255,.25); }
+.modal-body { padding: 24px; }
+.modal-section { margin-bottom: 20px; }
+.modal-section-title { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; color: var(--gray-400); margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px solid var(--gray-100); }
+.modal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 20px; }
+@media (max-width: 480px) { .modal-grid { grid-template-columns: 1fr; } }
+.modal-field .mf-label { font-size: 10.5px; font-weight: 600; text-transform: uppercase; letter-spacing: .4px; color: var(--gray-400); margin-bottom: 2px; }
+.modal-field .mf-value { font-size: 14px; color: var(--gray-800); font-weight: 500; }
+.modal-field.full { grid-column: 1 / -1; }
+.modal-total { background: var(--green); border-radius: var(--radius-sm); padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; margin-top: 12px; }
+.modal-total .tl { font-size: 13px; font-weight: 600; color: rgba(255,255,255,.8); text-transform: uppercase; letter-spacing: .5px; }
+.modal-total .tv { font-family: 'Lora', serif; font-size: 26px; font-weight: 700; color: #facc15; }
+.modal-cost-row { display: flex; justify-content: space-between; padding: 7px 0; border-bottom: 1px solid var(--gray-100); font-size: 13px; }
+.modal-cost-row .cl { color: var(--gray-600); }
+.modal-cost-row .cv { font-weight: 600; color: var(--gray-800); }
+
+/* ── ERROR BANNER ─────────────────────────────────────────────── */
+.error-banner { background: var(--red-light); border: 1.5px solid #fca5a5; border-radius: var(--radius-sm); padding: 12px 16px; font-size: 13px; color: var(--red); margin-bottom: 20px; display: none; }
+.error-banner.show { display: block; }
+.error-banner a { color: var(--red); font-weight: 600; }
+</style>
+</head>
+<body>
+
+<!-- AUTH LOADING -->
+<div class="auth-screen" id="auth-loading">
+  <div class="auth-spinner"></div>
+</div>
+
+<!-- LOGIN SCREEN -->
+<div class="auth-screen" id="login-screen" style="display:none;">
+  <div class="auth-card">
+    <div class="auth-crest">ILS</div>
+    <div class="auth-school">Immaculata-La Salle</div>
+    <div class="auth-sub">Finance Dashboard</div>
+    <div class="auth-divider"></div>
+    <p class="auth-desc">Sign in with your ILS Microsoft account to access the Finance Dashboard.</p>
+    <button class="btn-ms" id="signin-btn" onclick="signIn()">
+      <div class="ms-logo"><span class="q1"></span><span class="q2"></span><span class="q3"></span><span class="q4"></span></div>
+      Sign in with Microsoft
+    </button>
+    <p class="auth-notice">Finance &amp; Technology Department access only</p>
+  </div>
+</div>
+
+<!-- ACCESS DENIED -->
+<div class="auth-screen" id="denied-screen" style="display:none;">
+  <div class="auth-card">
+    <div class="denied-icon">🔒</div>
+    <div class="denied-title">Access Denied</div>
+    <p class="denied-sub">Your account is not authorized to view the Finance Dashboard. Contact the Technology Department if you need access.</p>
+    <button class="btn-outline" onclick="signOut()">Sign Out</button>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard">
+  <header class="site-header">
+    <div class="header-crest">ILS</div>
+    <div class="header-text">
+      <div class="header-school">Immaculata-La Salle High School</div>
+      <div class="header-title">Finance Dashboard</div>
+    </div>
+    <div class="header-right">
+      <a href="https://orojas119.github.io/ils-po-form/" class="header-link">← PO Form</a>
+      <span class="user-name-sm" id="header-name"></span>
+      <div class="user-avatar" id="header-avatar">?</div>
+      <button class="header-link" onclick="signOut()" style="border:none;cursor:pointer;">Sign out</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="error-banner" id="error-banner">
+      ⚠ Could not load SharePoint data. Make sure <strong>Sites.Read.All</strong> permission is granted in Azure AD.
+      <a href="https://portal.azure.com" target="_blank"> Open Azure Portal →</a>
+    </div>
+
+    <!-- HERO -->
+    <div class="hero">
+      <div class="hero-label">Total Purchase Order Spending</div>
+      <div class="hero-amount" id="hero-amount">—</div>
+      <div class="hero-meta">
+        <span class="hero-change" id="hero-change"></span>
+        <span class="hero-period-label" id="hero-period-label"></span>
+      </div>
+      <div class="period-tabs">
+        <button class="period-tab" onclick="setPeriod('1W')">1W</button>
+        <button class="period-tab" onclick="setPeriod('1M')">1M</button>
+        <button class="period-tab active" onclick="setPeriod('3M')">3M</button>
+        <button class="period-tab" onclick="setPeriod('6M')">6M</button>
+        <button class="period-tab" onclick="setPeriod('YTD')">YTD</button>
+        <button class="period-tab" onclick="setPeriod('Q1')">Q1</button>
+        <button class="period-tab" onclick="setPeriod('Q2')">Q2</button>
+        <button class="period-tab" onclick="setPeriod('Q3')">Q3</button>
+        <button class="period-tab" onclick="setPeriod('Q4')">Q4</button>
+      </div>
+    </div>
+
+    <!-- SPENDING CHART -->
+    <div class="card chart-card">
+      <div class="chart-wrap">
+        <canvas id="spending-chart"></canvas>
+        <div class="data-loading" id="chart-loading">
+          <div class="data-loading-spinner"></div>
+          <p>Loading purchase order data…</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- KPI CARDS -->
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-icon green">💰</div>
+        <div class="kpi-value" id="kpi-total">—</div>
+        <div class="kpi-label">Total Spent</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon gold">📋</div>
+        <div class="kpi-value" id="kpi-submitted">—</div>
+        <div class="kpi-label">POs Submitted</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon blue">✅</div>
+        <div class="kpi-value" id="kpi-approved">—</div>
+        <div class="kpi-label">Approved</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon orange">⏳</div>
+        <div class="kpi-value" id="kpi-pending">—</div>
+        <div class="kpi-label">Pending Approval</div>
+      </div>
+    </div>
+
+    <!-- DEPT BREAKDOWN + VENDORS -->
+    <div class="bottom-grid">
+      <div class="card">
+        <div class="card-title">Department Breakdown</div>
+        <div class="card-sub">Spending by department · <span id="dept-period"></span></div>
+        <div class="dept-chart-wrap"><canvas id="dept-chart"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-title">
+          Top Vendors
+          <span id="vendor-period" style="font-family:'Plus Jakarta Sans',sans-serif;font-size:11px;font-weight:500;color:var(--gray-400);"></span>
+        </div>
+        <div class="card-sub">Highest spend vendors this period</div>
+        <div class="vendor-list" id="vendor-list">
+          <div class="empty-state"><div class="empty-icon">📦</div><p>No data yet</p></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PO LIST -->
+    <div class="card">
+      <div class="po-list-header">
+        <div class="po-list-title">Purchase Orders</div>
+        <button class="btn-export" onclick="exportCSV()">⬇ Export CSV</button>
+      </div>
+      <input type="text" class="po-search" id="po-search" placeholder="Search by PO number, vendor, requester, or department…" oninput="filterPOList()">
+      <div class="po-table-wrap">
+        <table class="po-table" id="po-table">
+          <thead>
+            <tr>
+              <th>PO #</th>
+              <th>Requested By</th>
+              <th>Department</th>
+              <th>Vendor</th>
+              <th>Date</th>
+              <th style="text-align:right;">Total</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="po-tbody">
+            <tr><td colspan="7" style="text-align:center;padding:32px;color:var(--gray-400);">Loading…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- PO DETAIL MODAL -->
+<div class="modal-backdrop" id="po-modal" onclick="handleModalClick(event)">
+  <div class="modal" id="modal-inner">
+    <div class="modal-header">
+      <div>
+        <div class="modal-po-num" id="m-po-num">PO-2026-00001</div>
+        <div class="modal-requester" id="m-requester"></div>
+      </div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-section">
+        <div class="modal-section-title">Request Details</div>
+        <div class="modal-grid">
+          <div class="modal-field"><div class="mf-label">Date of Request</div><div class="mf-value" id="m-date-req"></div></div>
+          <div class="modal-field"><div class="mf-label">Date Required</div><div class="mf-value" id="m-date-needed"></div></div>
+          <div class="modal-field"><div class="mf-label">Department</div><div class="mf-value" id="m-dept"></div></div>
+          <div class="modal-field"><div class="mf-label">Financial Account</div><div class="mf-value" id="m-account"></div></div>
+          <div class="modal-field"><div class="mf-label">Status</div><div class="mf-value" id="m-status"></div></div>
+        </div>
+      </div>
+      <div class="modal-section">
+        <div class="modal-section-title">Vendor Details</div>
+        <div class="modal-grid">
+          <div class="modal-field"><div class="mf-label">Vendor</div><div class="mf-value" id="m-vendor"></div></div>
+          <div class="modal-field"><div class="mf-label">Quote Number</div><div class="mf-value" id="m-quote"></div></div>
+          <div class="modal-field full"><div class="mf-label">Address</div><div class="mf-value" id="m-address"></div></div>
+          <div class="modal-field"><div class="mf-label">Payment Terms</div><div class="mf-value" id="m-terms"></div></div>
+        </div>
+      </div>
+      <div class="modal-section">
+        <div class="modal-section-title">Order Details</div>
+        <div class="modal-field full"><div class="mf-label">Description</div><div class="mf-value" id="m-desc"></div></div>
+      </div>
+      <div class="modal-section">
+        <div class="modal-section-title">Cost Summary</div>
+        <div class="modal-cost-row"><span class="cl">Subtotal</span><span class="cv" id="m-subtotal"></span></div>
+        <div class="modal-cost-row"><span class="cl">Shipping &amp; Handling</span><span class="cv" id="m-shipping"></span></div>
+        <div class="modal-cost-row"><span class="cl">Additional Charges</span><span class="cv" id="m-additional"></span></div>
+        <div class="modal-total"><span class="tl">Grand Total</span><span class="tv" id="m-total"></span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── CONFIG ───────────────────────────────────────────────────────
+const ALLOWED_EMAILS = [
+  "mmedina@ilsroyals.com",
+  "kore@ilsroyals.com",
+  "techdepartment@ilsroyals.com",
+  "orojas@ilsroyals.com" // Tech dept access
+];
+
+const MSAL_CONFIG = {
+  auth: {
+    clientId: "22a5fda1-55c2-4815-ad14-16ab5ed95c60",
+    authority: "https://login.microsoftonline.com/8109e949-d281-46a4-af75-b18087925bf4",
+    redirectUri: "https://orojas119.github.io/ils-po-form/dashboard.html",
+    navigateToLoginRequestUrl: true,
+  },
+  cache: { cacheLocation: "sessionStorage", storeAuthStateInCookie: true }
+};
+
+const LOGIN_REQUEST  = { scopes: ["openid", "profile", "email", "User.Read", "Sites.Read.All"] };
+const GRAPH_REQUEST  = { scopes: ["User.Read", "Sites.Read.All"] };
+const SP_ENDPOINT    = "https://graph.microsoft.com/v1.0/sites/ilsroyals.sharepoint.com:/sites/ilsforms:/lists/9616e550-b144-445a-8659-3f362d489cf4/items?$expand=fields&$top=999";
+
+// ─── STATE ────────────────────────────────────────────────────────
+let msalInstance, currentAccount;
+let allPOs = [], filteredPOs = [];
+let currentPeriod = '3M';
+let spendingChart = null, deptChart = null;
+let searchQuery = '';
+
+// ─── AUTH ─────────────────────────────────────────────────────────
+async function initAuth() {
+  try {
+    msalInstance = new msal.PublicClientApplication(MSAL_CONFIG);
+    await msalInstance.initialize();
+    const redirectResult = await msalInstance.handleRedirectPromise();
+    if (redirectResult && redirectResult.account) {
+      await handleLogin(redirectResult.account);
+      return;
+    }
+    const accounts = msalInstance.getAllAccounts();
+    if (accounts.length > 0) {
+      await handleLogin(accounts[0]);
+    } else {
+      show('login-screen');
+    }
+  } catch (err) {
+    console.error("Auth init error:", err);
+    show('login-screen');
+  }
+}
+
+async function signIn() {
+  const btn = document.getElementById('signin-btn');
+  btn.disabled = true;
+  btn.textContent = 'Redirecting…';
+  try {
+    await msalInstance.loginRedirect(LOGIN_REQUEST);
+  } catch (err) {
+    console.error(err);
+    btn.disabled = false;
+    btn.innerHTML = `<div class="ms-logo"><span class="q1"></span><span class="q2"></span><span class="q3"></span><span class="q4"></span></div> Sign in with Microsoft`;
+  }
+}
+
+async function handleLogin(account) {
+  const email = (account.username || '').toLowerCase();
+  if (!ALLOWED_EMAILS.map(e=>e.toLowerCase()).includes(email)) {
+    show('denied-screen');
+    return;
+  }
+  currentAccount = account;
+  const initials = (account.name || email).split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase();
+  document.getElementById('header-name').textContent = account.name || email;
+  document.getElementById('header-avatar').textContent = initials;
+  show('dashboard');
+  await loadData();
+}
+
+async function signOut() {
+  try {
+    await msalInstance.logoutRedirect({ postLogoutRedirectUri: "https://orojas119.github.io/ils-po-form/dashboard.html" });
+  } catch(e) { console.error(e); }
+}
+
+function show(id) {
+  ['auth-loading','login-screen','denied-screen','dashboard'].forEach(s => {
+    const el = document.getElementById(s);
+    if (el) el.style.display = s === id ? (s === 'dashboard' ? 'block' : 'flex') : 'none';
+  });
+}
+
+// ─── DATA FETCHING ────────────────────────────────────────────────
+async function loadData() {
+  document.getElementById('chart-loading').style.display = 'flex';
+  try {
+    const tokenResp = await msalInstance.acquireTokenSilent({ ...GRAPH_REQUEST, account: currentAccount });
+    let url = SP_ENDPOINT;
+    let items = [];
+    while (url) {
+      const res = await fetch(url, { headers: { Authorization: `Bearer ${tokenResp.accessToken}` } });
+      if (!res.ok) throw new Error('SP API error: ' + res.status);
+      const data = await res.json();
+      items = items.concat(data.value || []);
+      url = data['@odata.nextLink'] || null;
+    }
+    allPOs = items.map(parsePO).filter(p => p.title && p.title !== 'Pending');
+    document.getElementById('chart-loading').style.display = 'none';
+    renderAll();
+  } catch (err) {
+    console.error("Data load error:", err);
+    document.getElementById('chart-loading').style.display = 'none';
+    document.getElementById('error-banner').classList.add('show');
+    renderAll(); // render with empty data
+  }
+}
+
+function parsePO(item) {
+  const f = item.fields || {};
+  const pf = v => (v && typeof v === 'object') ? (v.Value || '') : (v || '');
+  return {
+    id:           item.id,
+    createdDate:  item.createdDateTime,
+    title:        f.Title || '',
+    requestedBy:  f.field_2 || '',
+    dateOfReq:    f.field_1 || '',
+    dateNeeded:   f.field_5 || '',
+    department:   pf(f.Department),
+    account:      pf(f.field_3),
+    vendor:       f.Vendor || '',
+    vendorAddress:f.VendorAddress || '',
+    cityStateZip: f.City_x002c_State_x002c_Zip || '',
+    terms:        pf(f.Terms),
+    quoteNum:     f.Stock_x002f_QuoteNo_x002e_ || '',
+    description:  f.Order_x0020_Description || '',
+    subtotal:     parseFloat(f.Total_x0020_Cost_x0020__x0028_Cu) || 0,
+    shipping:     parseFloat(f.Shipping_x0020_Cost) || 0,
+    additional:   parseFloat(f.AdditionalCharges) || 0,
+    grandTotal:   parseFloat(f.GrandTotal) || 0,
+    approved:     f.Approved === true,
+  };
+}
+
+// ─── PERIOD LOGIC ─────────────────────────────────────────────────
+function getPeriodDates(period) {
+  const now = new Date();
+  const y = now.getFullYear();
+  let start, end = new Date(now);
+  end.setHours(23,59,59,999);
+  switch(period) {
+    case '1W':  start = new Date(now); start.setDate(start.getDate()-7); break;
+    case '1M':  start = new Date(now); start.setMonth(start.getMonth()-1); break;
+    case '3M':  start = new Date(now); start.setMonth(start.getMonth()-3); break;
+    case '6M':  start = new Date(now); start.setMonth(start.getMonth()-6); break;
+    case 'YTD': start = new Date(y,0,1); break;
+    case 'Q1':  start = new Date(y,0,1); end = new Date(y,2,31,23,59,59); break;
+    case 'Q2':  start = new Date(y,3,1); end = new Date(y,5,30,23,59,59); break;
+    case 'Q3':  start = new Date(y,6,1); end = new Date(y,8,30,23,59,59); break;
+    case 'Q4':  start = new Date(y,9,1); end = new Date(y,11,31,23,59,59); break;
+    default:    start = new Date(now); start.setMonth(start.getMonth()-3);
+  }
+  start.setHours(0,0,0,0);
+  return { start, end };
+}
+
+function getPeriodLabel(period) {
+  const y = new Date().getFullYear();
+  const labels = { '1W':'Past 7 days','1M':'Past 30 days','3M':'Past 3 months','6M':'Past 6 months','YTD':`Year to date ${y}`,'Q1':`Q1 ${y}`,'Q2':`Q2 ${y}`,'Q3':`Q3 ${y}`,'Q4':`Q4 ${y}` };
+  return labels[period] || period;
+}
+
+function filterByPeriod(pos, period) {
+  const { start, end } = getPeriodDates(period);
+  return pos.filter(p => {
+    const d = new Date(p.createdDate);
+    return d >= start && d <= end;
+  });
+}
+
+// ─── RENDER ALL ───────────────────────────────────────────────────
+function renderAll() {
+  filteredPOs = filterByPeriod(allPOs, currentPeriod);
+  const label = getPeriodLabel(currentPeriod);
+  document.getElementById('dept-period').textContent = label;
+  document.getElementById('vendor-period').textContent = label;
+  renderHero();
+  renderChart();
+  renderKPIs();
+  renderDeptChart();
+  renderVendors();
+  renderPOTable();
+}
+
+// ─── HERO ─────────────────────────────────────────────────────────
+function renderHero() {
+  const total = filteredPOs.reduce((s,p) => s + p.grandTotal, 0);
+  document.getElementById('hero-amount').textContent = fmt(total);
+  document.getElementById('hero-change').textContent = `${filteredPOs.length} purchase order${filteredPOs.length !== 1 ? 's' : ''}`;
+  document.getElementById('hero-period-label').textContent = getPeriodLabel(currentPeriod);
+}
+
+// ─── SPENDING CHART ───────────────────────────────────────────────
+function renderChart() {
+  const canvas = document.getElementById('spending-chart');
+  const ctx = canvas.getContext('2d');
+  const { start, end } = getPeriodDates(currentPeriod);
+
+  // Build daily cumulative data
+  const days = [];
+  const d = new Date(start);
+  while (d <= end) { days.push(new Date(d)); d.setDate(d.getDate()+1); }
+
+  const sorted = [...filteredPOs].sort((a,b) => new Date(a.createdDate)-new Date(b.createdDate));
+  let running = 0;
+  const labels = [], values = [];
+  days.forEach(day => {
+    const dayEnd = new Date(day); dayEnd.setHours(23,59,59,999);
+    sorted.forEach(p => {
+      const pd = new Date(p.createdDate);
+      if (pd >= day && pd <= dayEnd) running += p.grandTotal;
+    });
+    labels.push(fmtDate(day, currentPeriod));
+    values.push(running);
+  });
+
+  if (spendingChart) spendingChart.destroy();
+
+  // Gradient
+  const grad = ctx.createLinearGradient(0, 0, 0, 240);
+  grad.addColorStop(0, 'rgba(19,78,47,0.22)');
+  grad.addColorStop(1, 'rgba(19,78,47,0)');
+
+  // Reduce labels for readability
+  const maxLabels = currentPeriod === '1W' ? 7 : currentPeriod === '1M' ? 10 : 8;
+  const step = Math.max(1, Math.floor(labels.length / maxLabels));
+  const sparseLabels = labels.map((l,i) => i % step === 0 ? l : '');
+
+  spendingChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: sparseLabels,
+      datasets: [{
+        data: values,
+        borderColor: '#134e2f',
+        borderWidth: 2.5,
+        backgroundColor: grad,
+        fill: true,
+        tension: 0.4,
+        pointRadius: 0,
+        pointHoverRadius: 5,
+        pointHoverBackgroundColor: '#134e2f',
+        pointHoverBorderColor: '#fff',
+        pointHoverBorderWidth: 2.5,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: { duration: 800, easing: 'easeInOutQuart' },
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#1f2937',
+          titleColor: '#9ca3af',
+          bodyColor: '#ffffff',
+          padding: 12,
+          cornerRadius: 8,
+          callbacks: {
+            title: (items) => labels[items[0].dataIndex],
+            label: (item) => '  Cumulative: ' + fmt(item.raw),
+          }
+        }
+      },
+      scales: {
+        x: {
+          grid: { display: false },
+          border: { display: false },
+          ticks: { maxRotation: 0, font: { family: "'Plus Jakarta Sans',sans-serif", size: 11 }, color: '#9ca3af' }
+        },
+        y: {
+          position: 'right',
+          grid: { color: 'rgba(0,0,0,0.04)' },
+          border: { display: false, dash: [3,3] },
+          ticks: {
+            maxTicksLimit: 5,
+            font: { family: "'Plus Jakarta Sans',sans-serif", size: 11 },
+            color: '#9ca3af',
+            callback: v => v >= 1000 ? '$'+(v/1000).toFixed(0)+'k' : '$'+v
+          }
+        }
+      }
+    }
+  });
+}
+
+// ─── KPIs ─────────────────────────────────────────────────────────
+function renderKPIs() {
+  const total   = filteredPOs.reduce((s,p) => s + p.grandTotal, 0);
+  const approved = filteredPOs.filter(p => p.approved).length;
+  const pending  = filteredPOs.filter(p => !p.approved).length;
+  document.getElementById('kpi-total').textContent     = fmt(total);
+  document.getElementById('kpi-submitted').textContent = filteredPOs.length;
+  document.getElementById('kpi-approved').textContent  = approved;
+  document.getElementById('kpi-pending').textContent   = pending;
+}
+
+// ─── DEPT BREAKDOWN CHART ─────────────────────────────────────────
+function renderDeptChart() {
+  const deptMap = {};
+  filteredPOs.forEach(p => {
+    const d = p.department || 'Unknown';
+    deptMap[d] = (deptMap[d] || 0) + p.grandTotal;
+  });
+  const sorted = Object.entries(deptMap).sort((a,b) => b[1]-a[1]).slice(0,8);
+  const deptLabels = sorted.map(([k]) => k.length > 22 ? k.slice(0,20)+'…' : k);
+  const deptValues = sorted.map(([,v]) => v);
+
+  const canvas = document.getElementById('dept-chart');
+  if (deptChart) deptChart.destroy();
+
+  if (sorted.length === 0) {
+    canvas.style.display = 'none';
+    return;
+  }
+  canvas.style.display = 'block';
+
+  deptChart = new Chart(canvas, {
+    type: 'bar',
+    data: {
+      labels: deptLabels,
+      datasets: [{
+        data: deptValues,
+        backgroundColor: deptValues.map((_,i) => i === 0 ? '#134e2f' : `rgba(19,78,47,${0.75 - i*0.07})`),
+        borderRadius: 4,
+        borderSkipped: false,
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: { duration: 700 },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#1f2937',
+          callbacks: { label: item => ' ' + fmt(item.raw) }
+        }
+      },
+      scales: {
+        x: {
+          grid: { color: 'rgba(0,0,0,0.04)' },
+          border: { display: false },
+          ticks: { font: { family: "'Plus Jakarta Sans',sans-serif", size: 11 }, color: '#9ca3af', callback: v => '$'+(v/1000).toFixed(0)+'k' }
+        },
+        y: {
+          grid: { display: false },
+          border: { display: false },
+          ticks: { font: { family: "'Plus Jakarta Sans',sans-serif", size: 12 }, color: '#374151' }
+        }
+      }
+    }
+  });
+}
+
+// ─── VENDORS ──────────────────────────────────────────────────────
+function renderVendors() {
+  const vendorMap = {};
+  filteredPOs.forEach(p => {
+    const v = p.vendor || 'Unknown';
+    vendorMap[v] = (vendorMap[v] || 0) + p.grandTotal;
+  });
+  const sorted = Object.entries(vendorMap).sort((a,b) => b[1]-a[1]).slice(0,6);
+  const el = document.getElementById('vendor-list');
+  if (sorted.length === 0) {
+    el.innerHTML = '<div class="empty-state"><div class="empty-icon">📦</div><p>No data for this period</p></div>';
+    return;
+  }
+  const max = sorted[0][1];
+  el.innerHTML = sorted.map(([name, amount], i) => `
+    <div class="vendor-row">
+      <div class="vendor-rank">${i+1}</div>
+      <div class="vendor-name" title="${name}">${name}</div>
+      <div class="vendor-bar-wrap"><div class="vendor-bar" style="width:${(amount/max*100).toFixed(1)}%"></div></div>
+      <div class="vendor-amount">${fmt(amount)}</div>
+    </div>`).join('');
+}
+
+// ─── PO TABLE ─────────────────────────────────────────────────────
+function renderPOTable(pos) {
+  const data = pos || getSearchFiltered();
+  const tbody = document.getElementById('po-tbody');
+  if (data.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:32px;color:var(--gray-400);">No purchase orders found for this period</td></tr>';
+    return;
+  }
+  const sorted = [...data].sort((a,b) => new Date(b.createdDate)-new Date(a.createdDate));
+  tbody.innerHTML = sorted.map(p => `
+    <tr onclick="openModal(${JSON.stringify(p).replace(/'/g,"&#39;")})">
+      <td><span class="po-num">${p.title||'—'}</span></td>
+      <td><span class="po-requester">${p.requestedBy||'—'}</span></td>
+      <td><span class="po-dept">${p.department||'—'}</span></td>
+      <td style="max-width:140px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${p.vendor||'—'}</td>
+      <td style="color:var(--gray-500);font-size:12px;white-space:nowrap;">${fmtShort(p.createdDate)}</td>
+      <td class="po-amount">${fmt(p.grandTotal)}</td>
+      <td>${statusBadge(p.approved)}</td>
+    </tr>`).join('');
+}
+
+function getSearchFiltered() {
+  const q = searchQuery.toLowerCase();
+  if (!q) return filteredPOs;
+  return filteredPOs.filter(p =>
+    (p.title||'').toLowerCase().includes(q) ||
+    (p.vendor||'').toLowerCase().includes(q) ||
+    (p.requestedBy||'').toLowerCase().includes(q) ||
+    (p.department||'').toLowerCase().includes(q)
+  );
+}
+
+function filterPOList() {
+  searchQuery = document.getElementById('po-search').value;
+  renderPOTable();
+}
+
+function statusBadge(approved) {
+  if (approved) return '<span class="status-badge approved">✓ Approved</span>';
+  return '<span class="status-badge pending">⏳ Pending</span>';
+}
+
+// ─── MODAL ────────────────────────────────────────────────────────
+function openModal(po) {
+  if (typeof po === 'string') po = JSON.parse(po);
+  document.getElementById('m-po-num').textContent     = po.title || '—';
+  document.getElementById('m-requester').textContent  = 'Submitted by ' + (po.requestedBy || '—');
+  document.getElementById('m-date-req').textContent   = po.dateOfReq || '—';
+  document.getElementById('m-date-needed').textContent= po.dateNeeded || '—';
+  document.getElementById('m-dept').textContent       = po.department || '—';
+  document.getElementById('m-account').textContent    = po.account || '—';
+  document.getElementById('m-status').innerHTML       = statusBadge(po.approved);
+  document.getElementById('m-vendor').textContent     = po.vendor || '—';
+  document.getElementById('m-quote').textContent      = po.quoteNum || '—';
+  document.getElementById('m-address').textContent    = [po.vendorAddress, po.cityStateZip].filter(Boolean).join(', ') || '—';
+  document.getElementById('m-terms').textContent      = po.terms || '—';
+  document.getElementById('m-desc').textContent       = po.description || '—';
+  document.getElementById('m-subtotal').textContent   = fmt(po.subtotal);
+  document.getElementById('m-shipping').textContent   = fmt(po.shipping);
+  document.getElementById('m-additional').textContent = fmt(po.additional);
+  document.getElementById('m-total').textContent      = fmt(po.grandTotal);
+  document.getElementById('po-modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+  document.getElementById('po-modal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function handleModalClick(e) {
+  if (e.target === document.getElementById('po-modal')) closeModal();
+}
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+// ─── PERIOD CHANGE ────────────────────────────────────────────────
+function setPeriod(p) {
+  currentPeriod = p;
+  document.querySelectorAll('.period-tab').forEach(btn => {
+    btn.classList.toggle('active', btn.textContent === p);
+  });
+  searchQuery = '';
+  document.getElementById('po-search').value = '';
+  renderAll();
+}
+
+// ─── CSV EXPORT ───────────────────────────────────────────────────
+function exportCSV() {
+  const data = getSearchFiltered();
+  const headers = ['PO Number','Requested By','Department','Financial Account','Vendor','Date Submitted','Date Required','Subtotal','Shipping','Additional','Grand Total','Status'];
+  const rows = data.map(p => [
+    p.title, p.requestedBy, p.department, p.account, p.vendor,
+    fmtShort(p.createdDate), p.dateNeeded,
+    p.subtotal.toFixed(2), p.shipping.toFixed(2), p.additional.toFixed(2), p.grandTotal.toFixed(2),
+    p.approved ? 'Approved' : 'Pending'
+  ]);
+  const csv = [headers, ...rows].map(r => r.map(c => `"${(c||'').toString().replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob = new Blob([csv], {type:'text/csv'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `ILS_PO_${currentPeriod}_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ─── HELPERS ──────────────────────────────────────────────────────
+function fmt(n) {
+  return '$' + (parseFloat(n)||0).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
+}
+
+function fmtDate(date, period) {
+  const d = new Date(date);
+  if (['1W','1M'].includes(period)) return d.toLocaleDateString('en-US', {month:'short', day:'numeric'});
+  if (['3M','6M','YTD'].includes(period)) return d.toLocaleDateString('en-US', {month:'short', day:'numeric'});
+  return d.toLocaleDateString('en-US', {month:'short', day:'numeric'});
+}
+
+function fmtShort(dateStr) {
+  if (!dateStr) return '—';
+  return new Date(dateStr).toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'});
+}
+
+// ─── BOOT ─────────────────────────────────────────────────────────
+initAuth();
+</script>
+</body>
+</html>
