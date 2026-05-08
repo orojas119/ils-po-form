@@ -427,7 +427,7 @@ async function loadData(){
 function parsePO(item){
   const f=item.fields||{};
   const pf=v=>(v&&typeof v==='object')?(v.Value||''):(v||'');
-  return{id:item.id,createdDate:item.createdDateTime,title:f.Title||'',requestedBy:f.field_2||'',dateOfReq:f.field_1||'',dateNeeded:f.field_5||'',department:pf(f.Department),account:pf(f.field_3),vendor:f.Vendor||'',vendorAddress:f.VendorAddress||'',cityStateZip:f.City_x002c_State_x002c_Zip||'',terms:pf(f.Terms),quoteNum:f.Stock_x002f_QuoteNo_x002e_||'',description:f.Order_x0020_Description||'',subtotal:parseFloat(f.Total_x0020_Cost_x0020__x0028_Cu)||0,shipping:parseFloat(f.Shipping_x0020_Cost)||0,additional:parseFloat(f.AdditionalCharges)||0,grandTotal:parseFloat(f.GrandTotal)||0,approved:f.Approved===true};
+  return{id:item.id,createdDate:item.createdDateTime,title:f.Title||'',requestedBy:f.field_2||'',dateOfReq:f.field_1||'',dateNeeded:f.field_5||'',department:pf(f.Department),account:pf(f.field_3),vendor:f.Vendor||'',vendorAddress:f.VendorAddress||'',cityStateZip:f.City_x002c_State_x002c_Zip||'',terms:pf(f.Terms),quoteNum:f.Stock_x002f_QuoteNo_x002e_||'',description:f.Order_x0020_Description||'',subtotal:parseFloat(f.Total_x0020_Cost_x0020__x0028_Cu)||0,shipping:parseFloat(f.Shipping_x0020_Cost)||0,additional:parseFloat(f.AdditionalCharges)||0,grandTotal:parseFloat(f.GrandTotal)||0,approved:f.Approved===true,rejected:false};
 }
 
 function getPeriodDates(p){
@@ -558,10 +558,10 @@ function renderPOTable(){
   const tbody=document.getElementById('po-tbody');
   if(!displayedPOs.length){tbody.innerHTML='<tr><td colspan="7" style="text-align:center;padding:32px;color:var(--gray-400);">No purchase orders match your filters</td></tr>';return;}
   const sorted=[...displayedPOs].sort((a,b)=>new Date(b.createdDate)-new Date(a.createdDate));
-  tbody.innerHTML=sorted.map(p=>`<tr onclick='openModal(${JSON.stringify(p).replace(/'/g,"&#39;").replace(/\//g,"\\/")})'><td><span class="po-num">${p.title||'--'}</span></td><td style="font-weight:500;">${p.requestedBy||'--'}</td><td><span class="po-dept">${p.department||'--'}</span></td><td style="max-width:130px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${p.vendor||'--'}</td><td style="color:var(--gray-500);font-size:12px;white-space:nowrap;">${fmtShort(p.createdDate)}</td><td class="po-amount">${fmt(p.grandTotal)}</td><td>${badge(p.approved)}</td></tr>`).join('');
+  tbody.innerHTML=sorted.map(p=>`<tr onclick='openModal(${JSON.stringify(p).replace(/'/g,"&#39;").replace(/\//g,"\\/")})'><td><span class="po-num">${p.title||'--'}</span></td><td style="font-weight:500;">${p.requestedBy||'--'}</td><td><span class="po-dept">${p.department||'--'}</span></td><td style="max-width:130px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${p.vendor||'--'}</td><td style="color:var(--gray-500);font-size:12px;white-space:nowrap;">${fmtShort(p.createdDate)}</td><td class="po-amount">${fmt(p.grandTotal)}</td><td>${badge(p.approved,p.rejected)}</td></tr>`).join('');
 }
 
-function badge(a){return a?'<span class="status-badge approved">&#10003; Approved</span>':'<span class="status-badge pending">Pending</span>';}
+function badge(a,r){return a?'<span class="status-badge approved">&#10003; Approved</span>':r?'<span class="status-badge" style="background:#fee2e2;color:#991b1b;">&#10007; Rejected</span>':'<span class="status-badge pending">Pending</span>';}
 
 function openModal(po){
   if(typeof po==='string')po=JSON.parse(po);
@@ -572,7 +572,7 @@ function openModal(po){
   document.getElementById('m-date-needed').textContent=po.dateNeeded||'--';
   document.getElementById('m-dept').textContent=po.department||'--';
   document.getElementById('m-account').textContent=po.account||'--';
-  document.getElementById('m-status').innerHTML=badge(po.approved);
+  document.getElementById('m-status').innerHTML=badge(po.approved,po.rejected);
   document.getElementById('m-vendor').textContent=po.vendor||'--';
   document.getElementById('m-quote').textContent=po.quoteNum||'--';
   document.getElementById('m-address').textContent=[po.vendorAddress,po.cityStateZip].filter(Boolean).join(', ')||'--';
@@ -633,6 +633,10 @@ function renderApprovalSection(po){
     s.innerHTML='<div class="modal-section-title">Approval Status</div><div class="approved-banner"><span style="font-size:20px;">&#10003;</span><span>This purchase order has been approved.</span></div>';
     return;
   }
+  if(po.rejected){
+    s.innerHTML='<div class="modal-section-title">Approval Status</div><div style="background:#fee2e2;border:1.5px solid #fca5a5;border-radius:var(--radius-sm);padding:12px 16px;display:flex;align-items:center;gap:10px;font-size:13px;color:#991b1b;font-weight:600;"><span style="font-size:20px;">&#10007;</span><span>This purchase order has been rejected.</span></div>';
+    return;
+  }
   s.innerHTML=`
     <div class="modal-section-title">Take Action</div>
     <div class="approval-box">
@@ -672,10 +676,23 @@ async function submitDecision(decision){
   let submitterEmail='';
   try{
     const sTok=await msalInstance.acquireTokenSilent({...GRAPH_REQUEST,account:currentAccount});
-    const sRes=await fetch(`https://graph.microsoft.com/v1.0/users?$filter=displayName eq '${encodeURIComponent(currentModalPO.requestedBy)}'&$select=mail`,{headers:{Authorization:`Bearer ${sTok.accessToken}`}});
+    // Try display name search first
+    const sRes=await fetch(`https://graph.microsoft.com/v1.0/users?$filter=displayName eq '${encodeURIComponent(currentModalPO.requestedBy)}'&$select=mail,userPrincipalName`,{headers:{Authorization:`Bearer ${sTok.accessToken}`}});
     const sData=await sRes.json();
-    submitterEmail=sData.value?.[0]?.mail||'';
-  }catch(e){submitterEmail='';}
+    if(sData.value&&sData.value.length>0){
+      submitterEmail=sData.value[0].mail||sData.value[0].userPrincipalName||'';
+    }
+    // Fallback: search by first/last name if display name failed
+    if(!submitterEmail&&currentModalPO.requestedBy){
+      const parts=currentModalPO.requestedBy.trim().split(' ');
+      const query=encodeURIComponent(parts[0]);
+      const s2=await fetch(`https://graph.microsoft.com/v1.0/users?$filter=startswith(givenName,'${query}')&$select=mail,userPrincipalName,displayName`,{headers:{Authorization:`Bearer ${sTok.accessToken}`}});
+      const d2=await s2.json();
+      const match=d2.value&&d2.value.find(u=>u.displayName.toLowerCase()===currentModalPO.requestedBy.toLowerCase());
+      if(match)submitterEmail=match.mail||match.userPrincipalName||'';
+    }
+    console.log('Submitter email resolved:',submitterEmail||'(not found)');
+  }catch(e){console.error('Email lookup failed:',e);submitterEmail='';}
 
   const payload={
     sharePointItemId:currentModalPO.id,
@@ -694,14 +711,22 @@ async function submitDecision(decision){
     const res=await fetch(APPROVAL_FLOW_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
     if(!res.ok)throw new Error('Flow error '+res.status);
     if(decision==='approve')await patchSharePoint(currentModalPO.id,true);
+    // Update local state for both approve and reject
     const po=allPOs.find(p=>p.id===currentModalPO.id);
-    if(po)po.approved=decision==='approve';
-    currentModalPO.approved=decision==='approve';
+    if(decision==='approve'){
+      if(po)po.approved=true;
+      currentModalPO.approved=true;
+    } else {
+      // Mark rejected locally so it disappears from pending filter
+      if(po)po.rejected=true;
+      if(po)po.approved=false;
+      currentModalPO.rejected=true;
+    }
     resultEl.innerHTML=`<div class="approval-result success"><div class="approval-result-icon">&#10003;</div><div class="approval-result-text"><strong>${decision==='approve'?'PO Approved':'PO Rejected'}</strong>${decision==='approve'?'The PO has been approved and a signed PDF will be emailed to the requester.':'The rejection has been recorded and the requester will be notified.'}</div></div>`;
     btnA.style.display='none';btnR.style.display='none';
     document.getElementById('approval-comments').style.display='none';
     document.querySelector('.approval-comments-label').style.display='none';
-    document.getElementById('m-status').innerHTML=badge(currentModalPO.approved);
+    document.getElementById('m-status').innerHTML=badge(currentModalPO.approved,currentModalPO.rejected);
     renderKPIs();applyFilters();
   }catch(err){
     console.error(err);
