@@ -595,40 +595,39 @@ async function loadAttachment(itemId){
   area.innerHTML='<div class="attachment-loading"><div class="attachment-spinner"></div><span>Loading attachment\u2026</span></div>';
   try{
     const tok=await msalInstance.acquireTokenSilent({...GRAPH_REQUEST,account:currentAccount});
-    const res=await fetch(`${SP_BASE}/items/${itemId}/attachments`,{headers:{Authorization:`Bearer ${tok.accessToken}`}});
+    const spId=parseInt(itemId)||itemId;
+    const res=await fetch(`https://ilsroyals.sharepoint.com/sites/ilsforms/_api/web/lists(guid'9616e550-b144-445a-8659-3f362d489cf4')/items(${spId})/AttachmentFiles`,{headers:{Authorization:`Bearer ${tok.accessToken}`,Accept:'application/json;odata=nometadata'}});
+    if(!res.ok)throw new Error('SP '+res.status);
     const data=await res.json();
     const atts=data.value||[];
     if(!atts.length){area.innerHTML='<p class="no-attachment">\uD83D\uDCED No supporting document attached to this PO.</p>';return;}
-    area.innerHTML=atts.map(a=>`<div class="attachment-box"><div class="attachment-icon">\uD83D\uDCC4</div><div class="attachment-info"><div class="attachment-name">${a.name}</div><div class="attachment-sub">Click to view or download</div></div><button class="btn-view-doc" id="att-btn-${encodeURIComponent(a.name)}" onclick="viewAttachment('${itemId}','${encodeURIComponent(a.name)}',this)">View / Download</button></div>`).join('');
+    area.innerHTML=atts.map(a=>`<div class="attachment-box"><div class="attachment-icon">\uD83D\uDCC4</div><div class="attachment-info"><div class="attachment-name">${a.FileName}</div><div class="attachment-sub">Click to view or download</div></div><button class="btn-view-doc" onclick="viewAttachment('${encodeURIComponent(a.FileName)}','${encodeURIComponent(a.ServerRelativeUrl)}',this)">View / Download</button></div>`).join('');
   }catch(err){
     console.error(err);
     area.innerHTML='<p class="no-attachment">\u26A0 Could not load attachment.</p>';
   }
 }
 
-async function viewAttachment(itemId,encodedName,btn){
+async function viewAttachment(encodedName,encodedUrl,btn){
   const name=decodeURIComponent(encodedName);
+  const serverUrl=decodeURIComponent(encodedUrl);
   const orig=btn.textContent;
   btn.disabled=true;btn.textContent='Loading\u2026';
   try{
     const tok=await msalInstance.acquireTokenSilent({...GRAPH_REQUEST,account:currentAccount});
-    const res=await fetch(`${SP_BASE}/items/${itemId}/attachments/${encodedName}/$value`,{headers:{Authorization:`Bearer ${tok.accessToken}`}});
+    const res=await fetch(`https://ilsroyals.sharepoint.com/sites/ilsforms/_api/web/GetFileByServerRelativeUrl('${serverUrl}')/$value`,{headers:{Authorization:`Bearer ${tok.accessToken}`}});
     if(!res.ok)throw new Error('Download failed: '+res.status);
     const blob=await res.blob();
-    const ext=name.split('.').pop().toLowerCase();
-    const isPDF=ext==='pdf';
     const url=URL.createObjectURL(blob);
-    if(isPDF){
-      window.open(url,'_blank');
-    }else{
-      const a=document.createElement('a');a.href=url;a.download=name;a.click();
-    }
+    const ext=name.split('.').pop().toLowerCase();
+    if(ext==='pdf'){window.open(url,'_blank');}
+    else{const a=document.createElement('a');a.href=url;a.download=name;a.click();}
     setTimeout(()=>URL.revokeObjectURL(url),30000);
     btn.textContent=orig;btn.disabled=false;
   }catch(err){
     console.error(err);
     btn.textContent=orig;btn.disabled=false;
-    alert('Could not load attachment. Please try again.');
+    alert('Could not download attachment. Please try again.');
   }
 }
 
