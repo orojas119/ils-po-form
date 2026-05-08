@@ -448,15 +448,17 @@ function getPeriodDates(p){
 
 function getPeriodLabel(p){const now=new Date(),y=now.getFullYear();const fy=now.getMonth()>=6?y:y-1;return{'1W':'Past 7 days','1M':'Past 30 days','3M':'Past 3 months','6M':'Past 6 months','YTD':`Year to date ${y}`,'Q1':`Q1 Jul-Sep ${fy}`,'Q2':`Q2 Oct-Dec ${fy}`,'Q3':`Q3 Jan-Mar ${fy+1}`,'Q4':`Q4 Apr-Jun ${fy+1}`}[p]||p;}
 
+let approvedPOs=[];
 function renderAll(){
   filteredPOs=allPOs.filter(po=>{const{start,end}=getPeriodDates(currentPeriod),d=new Date(po.createdDate);return d>=start&&d<=end;});
+  approvedPOs=filteredPOs.filter(p=>p.approved);
   document.getElementById('dept-period').textContent=getPeriodLabel(currentPeriod);
   document.getElementById('vendor-period').textContent=getPeriodLabel(currentPeriod);
   populateFilterDropdowns();renderHero();renderChart();renderKPIs();renderDeptChart();renderVendors();applyFilters();
 }
 
 function renderHero(){
-  const t=filteredPOs.reduce((s,p)=>s+p.grandTotal,0);
+  const t=approvedPOs.reduce((s,p)=>s+p.grandTotal,0);
   document.getElementById('hero-amount').textContent=fmt(t);
   document.getElementById('hero-change').textContent=`${filteredPOs.length} purchase order${filteredPOs.length!==1?'s':''}`;
   document.getElementById('hero-period-label').textContent=getPeriodLabel(currentPeriod);
@@ -466,7 +468,7 @@ function renderChart(){
   const canvas=document.getElementById('spending-chart'),ctx=canvas.getContext('2d');
   const{start,end}=getPeriodDates(currentPeriod);
   const days=[];const d=new Date(start);while(d<=end){days.push(new Date(d));d.setDate(d.getDate()+1);}
-  const sorted=[...filteredPOs].sort((a,b)=>new Date(a.createdDate)-new Date(b.createdDate));
+  const sorted=[...approvedPOs].sort((a,b)=>new Date(a.createdDate)-new Date(b.createdDate));
   let run=0;const labels=[],values=[];
   days.forEach(day=>{
     const de=new Date(day);de.setHours(23,59,59,999);
@@ -480,7 +482,7 @@ function renderChart(){
 }
 
 function renderKPIs(){
-  const t=filteredPOs.reduce((s,p)=>s+p.grandTotal,0);
+  const t=approvedPOs.reduce((s,p)=>s+p.grandTotal,0);
   document.getElementById('kpi-total').textContent=fmt(t);
   document.getElementById('kpi-submitted').textContent=filteredPOs.length;
   document.getElementById('kpi-approved').textContent=filteredPOs.filter(p=>p.approved).length;
@@ -488,7 +490,7 @@ function renderKPIs(){
 }
 
 function renderDeptChart(){
-  const map={};filteredPOs.forEach(p=>{const d=p.department||'Unknown';map[d]=(map[d]||0)+p.grandTotal;});
+  const map={};approvedPOs.forEach(p=>{const d=p.department||'Unknown';map[d]=(map[d]||0)+p.grandTotal;});
   const sorted=Object.entries(map).sort((a,b)=>b[1]-a[1]).slice(0,8);
   const canvas=document.getElementById('dept-chart');
   if(deptChart)deptChart.destroy();
@@ -500,7 +502,7 @@ function normalizeVendor(v){
   return v.toLowerCase().replace(/[.,;!]/g,' ').replace(/\s+/g,' ').trim();
 }
 function renderVendors(){
-  const raw={};filteredPOs.forEach(p=>{const v=p.vendor||'Unknown';raw[v]=(raw[v]||0)+p.grandTotal;});
+  const raw={};approvedPOs.forEach(p=>{const v=p.vendor||'Unknown';raw[v]=(raw[v]||0)+p.grandTotal;});
   // Group by normalized name, keep the most common display name
   const norm={},names={};
   Object.entries(raw).forEach(([v,amt])=>{
