@@ -1,29 +1,751 @@
-async function loadAttachment(itemId){
-  const area=document.getElementById('attachment-area');
-  area.innerHTML='<div class="attachment-loading"><div class="attachment-spinner"></div><span>Loading...</span></div>';
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Finance Dashboard — ILS Royals</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@azure/msal-browser@2.38.0/lib/msal-browser.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{--green:#134e2f;--green-mid:#1a6b3f;--green-light:#e8f5ee;--green-pale:#f4faf7;--gold:#c49a1a;--gold-light:#fef9e7;--red:#dc2626;--red-light:#fef2f2;--orange:#d97706;--orange-light:#fffbeb;--gray-50:#f9fafb;--gray-100:#f3f4f6;--gray-200:#e5e7eb;--gray-300:#d1d5db;--gray-400:#9ca3af;--gray-500:#6b7280;--gray-600:#4b5563;--gray-800:#1f2937;--white:#ffffff;--shadow-sm:0 1px 3px rgba(0,0,0,.07);--shadow-md:0 4px 16px rgba(19,78,47,.08);--shadow-lg:0 12px 40px rgba(19,78,47,.14);--radius:14px;--radius-sm:8px;--transition:all .2s ease}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--gray-50);color:var(--gray-800);min-height:100vh;font-size:14px;line-height:1.6}
+.auth-screen{min-height:100vh;background:var(--green);display:flex;align-items:center;justify-content:center;padding:24px}
+.auth-card{background:rgba(255,255,255,.97);border-radius:20px;padding:52px 44px;max-width:420px;width:100%;text-align:center;box-shadow:0 24px 80px rgba(0,0,0,.3);animation:fadeUp .4s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.auth-crest{width:68px;height:68px;background:var(--green);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-family:'Lora',serif;font-size:26px;font-weight:700;color:#facc15;box-shadow:0 8px 24px rgba(19,78,47,.35)}
+.auth-school{font-family:'Lora',serif;font-size:18px;font-weight:700;color:var(--green);margin-bottom:4px}
+.auth-sub{font-size:12px;color:var(--gray-400);text-transform:uppercase;letter-spacing:.8px;margin-bottom:32px}
+.auth-divider{height:1px;background:var(--gray-100);margin:0 0 24px}
+.auth-desc{font-size:14px;color:var(--gray-600);margin-bottom:20px;line-height:1.5}
+.btn-ms{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:12px 20px;background:#0078d4;color:white;border:none;border-radius:var(--radius-sm);font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:var(--transition)}
+.btn-ms:hover{background:#006bbf;transform:translateY(-1px)}
+.btn-ms:disabled{opacity:.6;cursor:not-allowed;transform:none}
+.ms-logo{width:18px;height:18px;display:grid;grid-template-columns:1fr 1fr;gap:2px;flex-shrink:0}
+.ms-logo span{display:block;border-radius:1px}
+.ms-logo .q1{background:#f25022}.ms-logo .q2{background:#7fba00}.ms-logo .q3{background:#00a4ef}.ms-logo .q4{background:#ffb900}
+.auth-notice{margin-top:16px;font-size:11px;color:var(--gray-400)}
+.auth-spinner{width:36px;height:36px;border:3px solid rgba(255,255,255,.2);border-top-color:#facc15;border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.denied-icon{font-size:48px;margin-bottom:16px}
+.denied-title{font-family:'Lora',serif;font-size:20px;font-weight:600;color:var(--red);margin-bottom:8px}
+.denied-sub{font-size:13px;color:var(--gray-600);margin-bottom:20px;line-height:1.5}
+.btn-outline{padding:10px 20px;border-radius:var(--radius-sm);background:transparent;border:1.5px solid var(--green);color:var(--green);font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:var(--transition)}
+.btn-outline:hover{background:var(--green);color:white}
+.site-header{background:var(--green);padding:14px 28px;display:flex;align-items:center;gap:16px;box-shadow:0 2px 12px rgba(0,0,0,.18);position:sticky;top:0;z-index:100}
+.header-crest{width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.12);border:2px solid rgba(196,154,26,.5);display:flex;align-items:center;justify-content:center;font-family:'Lora',serif;font-size:16px;font-weight:700;color:#facc15;flex-shrink:0}
+.header-text{flex:1}
+.header-school{font-family:'Lora',serif;font-size:14px;font-weight:600;color:#facc15;line-height:1.2}
+.header-title{font-size:11px;color:rgba(255,255,255,.6);letter-spacing:.5px;text-transform:uppercase}
+.header-right{display:flex;align-items:center;gap:10px}
+.header-link{padding:6px 12px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:6px;color:rgba(255,255,255,.8);font-size:12px;font-weight:500;cursor:pointer;text-decoration:none;transition:var(--transition)}
+.header-link:hover{background:rgba(255,255,255,.18);color:white}
+.user-avatar{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.15);border:1.5px solid rgba(196,154,26,.5);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#facc15;flex-shrink:0}
+.user-name-sm{font-size:12px;font-weight:500;color:rgba(255,255,255,.8);max-width:140px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media(max-width:600px){.user-name-sm{display:none}}
+#dashboard{display:none}
+.container{max-width:1200px;margin:0 auto;padding:28px 20px 60px}
+.data-loading{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:80px 20px}
+.data-loading-spinner{width:40px;height:40px;border:3px solid var(--gray-200);border-top-color:var(--green);border-radius:50%;animation:spin .8s linear infinite}
+.data-loading p{font-size:14px;color:var(--gray-500)}
+.hero{padding:8px 0 24px}
+.hero-label{font-size:12px;text-transform:uppercase;letter-spacing:.8px;font-weight:600;color:var(--gray-500);margin-bottom:6px}
+.hero-amount{font-family:'Lora',serif;font-size:clamp(36px,6vw,56px);font-weight:700;color:var(--gray-800);line-height:1;margin-bottom:6px;letter-spacing:-1px}
+.hero-meta{display:flex;align-items:center;gap:12px;margin-bottom:24px;flex-wrap:wrap}
+.hero-change{font-size:15px;font-weight:600;color:var(--green)}
+.hero-period-label{font-size:13px;color:var(--gray-500)}
+.period-tabs{display:flex;gap:4px;flex-wrap:wrap}
+.period-tab{padding:6px 14px;border-radius:20px;font-size:13px;font-weight:600;border:1.5px solid var(--gray-200);cursor:pointer;transition:var(--transition);background:var(--white);color:var(--gray-600);box-shadow:var(--shadow-sm)}
+.period-tab:hover{border-color:var(--green);color:var(--green)}
+.period-tab.active{background:var(--green);color:var(--white);border-color:var(--green);box-shadow:0 2px 8px rgba(19,78,47,.25)}
+.card{background:var(--white);border-radius:var(--radius);padding:24px;box-shadow:var(--shadow-sm);border:1px solid var(--gray-200)}
+.card-title{font-family:'Lora',serif;font-size:16px;font-weight:600;color:var(--green);margin-bottom:4px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.card-sub{font-size:12px;color:var(--gray-500);margin-bottom:20px}
+.chart-card{margin-bottom:24px}
+.chart-wrap{position:relative;height:240px}
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
+@media(max-width:800px){.kpi-grid{grid-template-columns:repeat(2,1fr)}}
+.kpi-card{background:var(--white);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow-sm);border:1px solid var(--gray-200);transition:var(--transition)}
+.kpi-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-md)}
+.kpi-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;margin-bottom:12px}
+.kpi-icon.green{background:var(--green-light)}.kpi-icon.gold{background:var(--gold-light)}.kpi-icon.blue{background:#eff6ff}.kpi-icon.orange{background:var(--orange-light)}
+.kpi-value{font-family:'Lora',serif;font-size:24px;font-weight:700;color:var(--gray-800);line-height:1;margin-bottom:4px}
+.kpi-label{font-size:12px;color:var(--gray-500);font-weight:500;text-transform:uppercase;letter-spacing:.4px}
+.bottom-grid{display:grid;grid-template-columns:1fr 1.6fr;gap:20px;margin-bottom:20px}
+@media(max-width:900px){.bottom-grid{grid-template-columns:1fr}}
+.dept-chart-wrap{position:relative;height:260px}
+.vendor-list{display:flex;flex-direction:column;gap:10px}
+.vendor-row{display:flex;align-items:center;gap:12px}
+.vendor-rank{width:22px;height:22px;border-radius:50%;background:var(--green-light);color:var(--green);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.vendor-name{flex:1;font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.vendor-bar-wrap{flex:1;height:6px;background:var(--gray-100);border-radius:3px;overflow:hidden}
+.vendor-bar{height:100%;background:var(--green);border-radius:3px;transition:width .6s ease}
+.vendor-amount{font-size:13px;font-weight:600;text-align:right;flex-shrink:0;min-width:70px}
+.po-list-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px}
+.po-list-title{font-family:'Lora',serif;font-size:16px;font-weight:600;color:var(--green)}
+.btn-export{padding:6px 14px;background:var(--green-light);border:1.5px solid var(--green);border-radius:6px;color:var(--green);font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:var(--transition)}
+.btn-export:hover{background:var(--green);color:white}
+.filter-bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px;padding:14px 16px;background:var(--gray-50);border-radius:var(--radius-sm);border:1px solid var(--gray-200)}
+.filter-bar-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--gray-500);flex-shrink:0}
+.filter-select{padding:6px 10px;border:1.5px solid var(--gray-200);border-radius:6px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;color:var(--gray-800);background:var(--white);outline:none;cursor:pointer;transition:var(--transition)}
+.filter-select:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(19,78,47,.08)}
+.filter-select.active{border-color:var(--green);background:var(--green-light);color:var(--green);font-weight:600}
+.filter-clear{padding:5px 10px;background:none;border:1.5px solid var(--gray-200);border-radius:6px;font-size:12px;color:var(--gray-500);cursor:pointer;transition:var(--transition)}
+.filter-clear:hover{border-color:var(--red);color:var(--red);background:var(--red-light)}
+.filter-count{font-size:12px;color:var(--gray-500);margin-left:auto;white-space:nowrap}
+.po-search{width:100%;padding:8px 12px;border:1.5px solid var(--gray-200);border-radius:var(--radius-sm);font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;color:var(--gray-800);outline:none;transition:var(--transition);margin-bottom:12px}
+.po-search:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(19,78,47,.08)}
+.po-table-wrap{overflow-y:auto;max-height:380px}
+.po-table{width:100%;border-collapse:collapse}
+.po-table th{position:sticky;top:0;background:var(--gray-50);padding:8px 12px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--gray-500);border-bottom:1px solid var(--gray-200);white-space:nowrap}
+.po-table td{padding:10px 12px;border-bottom:1px solid var(--gray-100);font-size:13px;vertical-align:middle}
+.po-table tr:last-child td{border-bottom:none}
+.po-table tbody tr{cursor:pointer;transition:background .12s}
+.po-table tbody tr:hover td{background:var(--green-pale)}
+.po-num{font-weight:600;color:var(--green);font-size:12px}
+.po-dept{color:var(--gray-500);font-size:12px;max-width:120px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.po-amount{font-weight:600;text-align:right}
+.status-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:12px;font-size:11px;font-weight:600;white-space:nowrap}
+.status-badge.approved{background:#dcfce7;color:#166534}
+.status-badge.pending{background:var(--gold-light);color:#854d0e}
+.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);z-index:500;display:none;align-items:center;justify-content:center;padding:20px}
+.modal-backdrop.open{display:flex}
+.modal{background:var(--white);border-radius:var(--radius);width:100%;max-width:640px;max-height:92vh;overflow-y:auto;box-shadow:var(--shadow-lg);animation:slideUp .25s ease}
+@keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.modal-header{background:var(--green);padding:20px 24px;display:flex;align-items:flex-start;justify-content:space-between;gap:16px;border-radius:var(--radius) var(--radius) 0 0}
+.modal-po-num{font-family:'Lora',serif;font-size:22px;font-weight:700;color:#facc15}
+.modal-requester{font-size:13px;color:rgba(255,255,255,.7);margin-top:2px}
+.modal-close{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.15);border:none;color:white;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:var(--transition);flex-shrink:0;line-height:1}
+.modal-close:hover{background:rgba(255,255,255,.25)}
+.modal-body{padding:24px}
+.modal-section{margin-bottom:20px}
+.modal-section-title{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--gray-400);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--gray-100)}
+.modal-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px 20px}
+@media(max-width:480px){.modal-grid{grid-template-columns:1fr}}
+.modal-field .mf-label{font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:.4px;color:var(--gray-400);margin-bottom:2px}
+.modal-field .mf-value{font-size:14px;color:var(--gray-800);font-weight:500}
+.modal-field.full{grid-column:1 / -1}
+.modal-total{background:var(--green);border-radius:var(--radius-sm);padding:16px 20px;display:flex;justify-content:space-between;align-items:center;margin-top:10px}
+.modal-total .tl{font-size:13px;font-weight:600;color:rgba(255,255,255,.8);text-transform:uppercase;letter-spacing:.5px}
+.modal-total .tv{font-family:'Lora',serif;font-size:26px;font-weight:700;color:#facc15}
+.modal-cost-row{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--gray-100);font-size:13px}
+.modal-cost-row .cl{color:var(--gray-600)}
+.modal-cost-row .cv{font-weight:600}
+.attachment-box{display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--gray-50);border:1.5px solid var(--gray-200);border-radius:var(--radius-sm);transition:var(--transition)}
+.attachment-box:hover{border-color:var(--green);background:var(--green-pale)}
+.attachment-icon{font-size:24px;flex-shrink:0}
+.attachment-info{flex:1;min-width:0}
+.attachment-name{font-size:13px;font-weight:600;color:var(--gray-800);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.attachment-sub{font-size:11px;color:var(--gray-500)}
+.btn-view-doc{padding:7px 14px;background:var(--green);color:white;border:none;border-radius:6px;font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:var(--transition);white-space:nowrap;flex-shrink:0}
+.btn-view-doc:hover{background:var(--green-mid)}
+.attachment-loading{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--gray-500);padding:12px 0}
+.attachment-spinner{width:16px;height:16px;border:2px solid var(--gray-200);border-top-color:var(--green);border-radius:50%;animation:spin .7s linear infinite}
+.no-attachment{font-size:13px;color:var(--gray-400);padding:8px 0}
+.approval-box{border:1.5px solid var(--gray-200);border-radius:var(--radius-sm);overflow:hidden}
+.approval-box-header{background:var(--gray-50);padding:12px 16px;border-bottom:1px solid var(--gray-200)}
+.approval-box-title{font-size:13px;font-weight:700;color:var(--gray-800)}
+.approval-box-sub{font-size:11px;color:var(--gray-500);margin-top:1px}
+.approval-box-body{padding:16px}
+.approval-comments{width:100%;padding:10px 12px;border:1.5px solid var(--gray-200);border-radius:var(--radius-sm);font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;color:var(--gray-800);resize:vertical;min-height:80px;outline:none;transition:var(--transition);margin-bottom:14px}
+.approval-comments:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(19,78,47,.08)}
+.approval-comments-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.4px;color:var(--gray-500);margin-bottom:6px;display:block}
+.approval-btns{display:flex;gap:10px}
+.btn-approve{flex:1;padding:11px 20px;background:var(--green);color:white;border:none;border-radius:var(--radius-sm);font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:var(--transition);display:flex;align-items:center;justify-content:center;gap:6px}
+.btn-approve:hover{background:var(--green-mid);transform:translateY(-1px)}
+.btn-approve:disabled{opacity:.6;cursor:not-allowed;transform:none}
+.btn-reject{flex:1;padding:11px 20px;background:var(--white);color:var(--red);border:1.5px solid var(--red);border-radius:var(--radius-sm);font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:var(--transition);display:flex;align-items:center;justify-content:center;gap:6px}
+.btn-reject:hover{background:var(--red-light);transform:translateY(-1px)}
+.btn-reject:disabled{opacity:.6;cursor:not-allowed;transform:none}
+.approval-result{display:flex;align-items:flex-start;gap:12px;padding:14px 16px;border-radius:var(--radius-sm);font-size:13px;line-height:1.5;margin-top:12px}
+.approval-result.success{background:#dcfce7;border:1.5px solid #86efac;color:#166534}
+.approval-result.error{background:var(--red-light);border:1.5px solid #fca5a5;color:var(--red)}
+.approval-result-icon{font-size:20px;flex-shrink:0}
+.approval-result-text strong{display:block;font-size:14px;margin-bottom:2px}
+.approved-banner{background:#dcfce7;border:1.5px solid #86efac;border-radius:var(--radius-sm);padding:12px 16px;display:flex;align-items:center;gap:10px;font-size:13px;color:#166534;font-weight:600}
+.btn-spinner{width:16px;height:16px;border:2px solid rgba(255,255,255,.4);border-top-color:white;border-radius:50%;animation:spin .7s linear infinite;display:none}
+.error-banner{background:var(--red-light);border:1.5px solid #fca5a5;border-radius:var(--radius-sm);padding:12px 16px;font-size:13px;color:var(--red);margin-bottom:20px;display:none}
+.error-banner.show{display:block}
+.error-banner a{color:var(--red);font-weight:600}
+</style>
+</head>
+<body>
+
+<div class="auth-screen" id="auth-loading"><div class="auth-spinner"></div></div>
+
+<div class="auth-screen" id="login-screen" style="display:none;">
+  <div class="auth-card">
+    <div class="auth-crest">ILS</div>
+    <div class="auth-school">Immaculata-La Salle</div>
+    <div class="auth-sub">Finance Dashboard</div>
+    <div class="auth-divider"></div>
+    <p class="auth-desc">Sign in with your ILS Microsoft account to access the Finance Dashboard.</p>
+    <button class="btn-ms" id="signin-btn" onclick="signIn()">
+      <div class="ms-logo"><span class="q1"></span><span class="q2"></span><span class="q3"></span><span class="q4"></span></div>
+      Sign in with Microsoft
+    </button>
+    <p class="auth-notice">Finance &amp; Technology Department access only</p>
+  </div>
+</div>
+
+<div class="auth-screen" id="denied-screen" style="display:none;">
+  <div class="auth-card">
+    <div class="denied-icon">🔒</div>
+    <div class="denied-title">Access Denied</div>
+    <p class="denied-sub">Your account is not authorized to view the Finance Dashboard. Contact the Technology Department if you need access.</p>
+    <button class="btn-outline" onclick="signOut()">Sign Out</button>
+  </div>
+</div>
+
+<div id="dashboard">
+  <header class="site-header">
+    <div class="header-crest">ILS</div>
+    <div class="header-text">
+      <div class="header-school">Immaculata-La Salle High School</div>
+      <div class="header-title">Finance Dashboard</div>
+    </div>
+    <div class="header-right">
+      <a href="https://po.ilsroyals.com/" class="header-link">&#8592; PO Form</a>
+      <span class="user-name-sm" id="header-name"></span>
+      <div class="user-avatar" id="header-avatar">?</div>
+      <button class="header-link" onclick="signOut()">Sign out</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="error-banner" id="error-banner">
+      &#9888; Could not load SharePoint data. Make sure <strong>Sites.Read.All</strong> permission is granted in Azure AD.
+      <a href="https://portal.azure.com" target="_blank"> Open Azure Portal &#8594;</a>
+    </div>
+
+    <div class="hero">
+      <div class="hero-label">Total Purchase Order Spending</div>
+      <div class="hero-amount" id="hero-amount">&#8212;</div>
+      <div class="hero-meta">
+        <span class="hero-change" id="hero-change"></span>
+        <span class="hero-period-label" id="hero-period-label"></span>
+      </div>
+      <div class="period-tabs">
+        <button class="period-tab" onclick="setPeriod('1W')">1W</button>
+        <button class="period-tab" onclick="setPeriod('1M')">1M</button>
+        <button class="period-tab active" onclick="setPeriod('3M')">3M</button>
+        <button class="period-tab" onclick="setPeriod('6M')">6M</button>
+        <button class="period-tab" onclick="setPeriod('YTD')">YTD</button>
+        <button class="period-tab" onclick="setPeriod('Q1')">Q1</button>
+        <button class="period-tab" onclick="setPeriod('Q2')">Q2</button>
+        <button class="period-tab" onclick="setPeriod('Q3')">Q3</button>
+        <button class="period-tab" onclick="setPeriod('Q4')">Q4</button>
+      </div>
+    </div>
+
+    <div class="card chart-card">
+      <div class="chart-wrap">
+        <canvas id="spending-chart"></canvas>
+        <div class="data-loading" id="chart-loading">
+          <div class="data-loading-spinner"></div>
+          <p>Loading purchase order data&#8230;</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="kpi-grid">
+      <div class="kpi-card"><div class="kpi-icon green">&#128176;</div><div class="kpi-value" id="kpi-total">&#8212;</div><div class="kpi-label">Total Spent</div></div>
+      <div class="kpi-card"><div class="kpi-icon gold">&#128203;</div><div class="kpi-value" id="kpi-submitted">&#8212;</div><div class="kpi-label">POs Submitted</div></div>
+      <div class="kpi-card"><div class="kpi-icon blue">&#9989;</div><div class="kpi-value" id="kpi-approved">&#8212;</div><div class="kpi-label">Approved</div></div>
+      <div class="kpi-card"><div class="kpi-icon orange">&#9203;</div><div class="kpi-value" id="kpi-pending">&#8212;</div><div class="kpi-label">Pending Approval</div></div>
+    </div>
+
+    <div class="bottom-grid">
+      <div class="card">
+        <div class="card-title">Department Breakdown</div>
+        <div class="card-sub">Spending by department &#183; <span id="dept-period"></span></div>
+        <div class="dept-chart-wrap"><canvas id="dept-chart"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Top Vendors <span id="vendor-period" style="font-family:'Plus Jakarta Sans',sans-serif;font-size:11px;font-weight:500;color:var(--gray-400);"></span></div>
+        <div class="card-sub">Highest spend vendors this period</div>
+        <div class="vendor-list" id="vendor-list"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="po-list-header">
+        <div class="po-list-title">Purchase Orders</div>
+        <button class="btn-export" onclick="exportCSV()">&#8595; Export CSV</button>
+      </div>
+      <div class="filter-bar">
+        <span class="filter-bar-label">Filter:</span>
+        <select class="filter-select" id="filter-dept" onchange="applyFilters()">
+          <option value="">All Departments</option>
+        </select>
+        <select class="filter-select" id="filter-person" onchange="applyFilters()">
+          <option value="">All Requesters</option>
+        </select>
+        <select class="filter-select" id="filter-status" onchange="applyFilters()">
+          <option value="">All Statuses</option>
+          <option value="pending">Pending</option>
+          <option value="approved">Approved</option>
+        </select>
+        <button class="filter-clear" onclick="clearFilters()">&#10005; Clear</button>
+        <span class="filter-count" id="filter-count"></span>
+      </div>
+      <input type="text" class="po-search" id="po-search" placeholder="Search by PO number, vendor, requester, or department&#8230;" oninput="applyFilters()">
+      <div class="po-table-wrap">
+        <table class="po-table">
+          <thead>
+            <tr>
+              <th>PO #</th><th>Requested By</th><th>Department</th><th>Vendor</th><th>Date</th>
+              <th style="text-align:right;">Total</th><th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="po-tbody">
+            <tr><td colspan="7" style="text-align:center;padding:32px;color:var(--gray-400);">Loading&#8230;</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>
+
+<div class="modal-backdrop" id="po-modal" onclick="handleModalClick(event)">
+  <div class="modal" id="modal-inner">
+    <div class="modal-header">
+      <div>
+        <div class="modal-po-num" id="m-po-num"></div>
+        <div class="modal-requester" id="m-requester"></div>
+      </div>
+      <button class="modal-close" onclick="closeModal()">&#10005;</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-section">
+        <div class="modal-section-title">Request Details</div>
+        <div class="modal-grid">
+          <div class="modal-field"><div class="mf-label">Date of Request</div><div class="mf-value" id="m-date-req"></div></div>
+          <div class="modal-field"><div class="mf-label">Date Required</div><div class="mf-value" id="m-date-needed"></div></div>
+          <div class="modal-field"><div class="mf-label">Department</div><div class="mf-value" id="m-dept"></div></div>
+          <div class="modal-field"><div class="mf-label">Financial Account</div><div class="mf-value" id="m-account"></div></div>
+          <div class="modal-field"><div class="mf-label">Status</div><div class="mf-value" id="m-status"></div></div>
+        </div>
+      </div>
+      <div class="modal-section">
+        <div class="modal-section-title">Vendor Details</div>
+        <div class="modal-grid">
+          <div class="modal-field"><div class="mf-label">Vendor</div><div class="mf-value" id="m-vendor"></div></div>
+          <div class="modal-field"><div class="mf-label">Quote Number</div><div class="mf-value" id="m-quote"></div></div>
+          <div class="modal-field full"><div class="mf-label">Address</div><div class="mf-value" id="m-address"></div></div>
+          <div class="modal-field"><div class="mf-label">Payment Terms</div><div class="mf-value" id="m-terms"></div></div>
+        </div>
+      </div>
+      <div class="modal-section">
+        <div class="modal-section-title">Order Details</div>
+        <div class="modal-field full"><div class="mf-label">Description</div><div class="mf-value" id="m-desc"></div></div>
+      </div>
+      <div class="modal-section">
+        <div class="modal-section-title">Cost Summary</div>
+        <div class="modal-cost-row"><span class="cl">Subtotal</span><span class="cv" id="m-subtotal"></span></div>
+        <div class="modal-cost-row"><span class="cl">Shipping &amp; Handling</span><span class="cv" id="m-shipping"></span></div>
+        <div class="modal-cost-row"><span class="cl">Additional Charges</span><span class="cv" id="m-additional"></span></div>
+        <div class="modal-total"><span class="tl">Grand Total</span><span class="tv" id="m-total"></span></div>
+      </div>
+      <div class="modal-section">
+        <div class="modal-section-title">Supporting Document</div>
+        <div id="attachment-area">
+          <div class="attachment-loading"><div class="attachment-spinner"></div><span>Loading attachment&#8230;</span></div>
+        </div>
+      </div>
+      <div class="modal-section" id="approval-section"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const APPROVAL_FLOW_URL = "https://default8109e949d28146a4af75b18087925b.f4.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/2bcbe350ff7c4cdf8985d63285d5a4d1/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=7q6Z-ZnCzTxaESM7AEy0lE_NFmkQ9Dera1SwZONlnIo";
+const ALLOWED_EMAILS = ["mmedina@ilsroyals.com","kore@ilsroyals.com","techdepartment@ilsroyals.com","orojas@ilsroyals.com"];
+const MSAL_CONFIG = {
+  auth:{clientId:"22a5fda1-55c2-4815-ad14-16ab5ed95c60",authority:"https://login.microsoftonline.com/8109e949-d281-46a4-af75-b18087925bf4",redirectUri:"https://po.ilsroyals.com/dashboard.html",navigateToLoginRequestUrl:true},
+  cache:{cacheLocation:"sessionStorage",storeAuthStateInCookie:true}
+};
+const LOGIN_REQUEST={scopes:["openid","profile","email","User.Read","Sites.Read.All"]};
+const GRAPH_REQUEST={scopes:["User.Read","Sites.Read.All"]};
+const SP_BASE="https://graph.microsoft.com/v1.0/sites/ilsroyals.sharepoint.com:/sites/ilsforms:/lists/9616e550-b144-445a-8659-3f362d489cf4";
+const SP_ITEMS=`${SP_BASE}/items?$expand=fields&$top=999`;
+
+let msalInstance,currentAccount,allPOs=[],filteredPOs=[],displayedPOs=[];
+let currentPeriod='3M',filterDept='',filterPerson='',filterStatus='',searchQuery='';
+let spendingChart=null,deptChart=null,currentModalPO=null;
+
+async function initAuth(){
   try{
-    const spTok=await getSpToken();
-    const spId=parseInt(itemId)||itemId;
-    const res=await fetch(`https://ilsroyals.sharepoint.com/sites/ilsforms/_api/web/lists(guid'9616e550-b144-445a-8659-3f362d489cf4')/items(${spId})/AttachmentFiles`,{headers:{Authorization:`Bearer ${spTok}`,Accept:'application/json;odata=nometadata'}});
-    if(!res.ok)throw new Error('SP '+res.status);
-    const data=await res.json();const atts=data.value||[];
-    if(!atts.length){area.innerHTML='<p class="no-attachment">No supporting document attached to this PO.</p>';return;}
-    area.innerHTML=atts.map(a=>`<div class="attachment-box"><div class="attachment-icon">&#128196;</div><div class="attachment-info"><div class="attachment-name">${a.FileName}</div><div class="attachment-sub">Click to view or download</div></div><button class="btn-view-doc" onclick="viewAttachment('${encodeURIComponent(a.FileName)}','${encodeURIComponent(a.ServerRelativeUrl)}',this)">View / Download</button></div>`).join('');
-  }catch(err){console.error(err);area.innerHTML='<p class="no-attachment">Could not load attachment.</p>';}
+    msalInstance=new msal.PublicClientApplication(MSAL_CONFIG);
+    await msalInstance.initialize();
+    const r=await msalInstance.handleRedirectPromise();
+    if(r&&r.account){await handleLogin(r.account);return;}
+    const a=msalInstance.getAllAccounts();
+    if(a.length>0)await handleLogin(a[0]);else show('login-screen');
+  }catch(e){console.error(e);show('login-screen');}
 }
 
-async function viewAttachment(encodedName,encodedUrl,btn){
-  const name=decodeURIComponent(encodedName);
-  const serverUrl=decodeURIComponent(encodedUrl);
-  const orig=btn.textContent;btn.disabled=true;btn.textContent='Loading...';
+async function signIn(){
+  const btn=document.getElementById('signin-btn');
+  btn.disabled=true;btn.textContent='Redirecting\u2026';
+  try{await msalInstance.loginRedirect(LOGIN_REQUEST);}
+  catch(e){console.error(e);btn.disabled=false;btn.innerHTML='<div class="ms-logo"><span class="q1"></span><span class="q2"></span><span class="q3"></span><span class="q4"></span></div> Sign in with Microsoft';}
+}
+
+async function handleLogin(account){
+  if(!ALLOWED_EMAILS.map(e=>e.toLowerCase()).includes((account.username||'').toLowerCase())){show('denied-screen');return;}
+  currentAccount=account;
+  const ini=(account.name||account.username).split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase();
+  document.getElementById('header-name').textContent=account.name||account.username;
+  document.getElementById('header-avatar').textContent=ini;
+  show('dashboard');
+  await loadData();
+}
+
+async function signOut(){try{await msalInstance.logoutRedirect({postLogoutRedirectUri:"https://po.ilsroyals.com/dashboard.html"});}catch(e){console.error(e);}}
+
+function show(id){
+  ['auth-loading','login-screen','denied-screen','dashboard'].forEach(s=>{
+    const el=document.getElementById(s);
+    if(el)el.style.display=s===id?(s==='dashboard'?'block':'flex'):'none';
+  });
+}
+
+async function loadData(){
+  document.getElementById('chart-loading').style.display='flex';
   try{
-    const spTok=await getSpToken();
-    const res=await fetch(`https://ilsroyals.sharepoint.com/sites/ilsforms/_api/web/GetFileByServerRelativeUrl('${serverUrl}')/$value`,{headers:{Authorization:`Bearer ${spTok}`}});
+    const tok=await msalInstance.acquireTokenSilent({...GRAPH_REQUEST,account:currentAccount});
+    let url=SP_ITEMS,items=[];
+    while(url){
+      const res=await fetch(url,{headers:{Authorization:`Bearer ${tok.accessToken}`}});
+      if(!res.ok)throw new Error('SP '+res.status);
+      const d=await res.json();items=items.concat(d.value||[]);url=d['@odata.nextLink']||null;
+    }
+    allPOs=items.map(parsePO).filter(p=>p.title&&p.title!=='Pending');
+    document.getElementById('chart-loading').style.display='none';
+    renderAll();
+  }catch(err){
+    console.error(err);
+    document.getElementById('chart-loading').style.display='none';
+    document.getElementById('error-banner').classList.add('show');
+    renderAll();
+  }
+}
+
+function parsePO(item){
+  const f=item.fields||{};
+  const pf=v=>(v&&typeof v==='object')?(v.Value||''):(v||'');
+  return{id:item.id,createdDate:item.createdDateTime,title:f.Title||'',requestedBy:f.field_2||'',dateOfReq:f.field_1||'',dateNeeded:f.field_5||'',department:pf(f.Department),account:pf(f.field_3),vendor:f.Vendor||'',vendorAddress:f.VendorAddress||'',cityStateZip:f.City_x002c_State_x002c_Zip||'',terms:pf(f.Terms),quoteNum:f.Stock_x002f_QuoteNo_x002e_||'',description:f.Order_x0020_Description||'',subtotal:parseFloat(f.Total_x0020_Cost_x0020__x0028_Cu)||0,shipping:parseFloat(f.Shipping_x0020_Cost)||0,additional:parseFloat(f.AdditionalCharges)||0,grandTotal:parseFloat(f.GrandTotal)||0,approved:f.Approved===true};
+}
+
+function getPeriodDates(p){
+  const now=new Date(),y=now.getFullYear();
+  let start,end=new Date(now);end.setHours(23,59,59,999);
+  if(p==='1W'){start=new Date(now);start.setDate(start.getDate()-7);}
+  else if(p==='1M'){start=new Date(now);start.setMonth(start.getMonth()-1);}
+  else if(p==='3M'){start=new Date(now);start.setMonth(start.getMonth()-3);}
+  else if(p==='6M'){start=new Date(now);start.setMonth(start.getMonth()-6);}
+  else if(p==='YTD'){start=new Date(y,0,1);}
+  else if(p==='Q1'){start=new Date(y,0,1);end=new Date(y,2,31,23,59,59);}
+  else if(p==='Q2'){start=new Date(y,3,1);end=new Date(y,5,30,23,59,59);}
+  else if(p==='Q3'){start=new Date(y,6,1);end=new Date(y,8,30,23,59,59);}
+  else if(p==='Q4'){start=new Date(y,9,1);end=new Date(y,11,31,23,59,59);}
+  else{start=new Date(now);start.setMonth(start.getMonth()-3);}
+  start.setHours(0,0,0,0);return{start,end};
+}
+
+function getPeriodLabel(p){const y=new Date().getFullYear();return{'1W':'Past 7 days','1M':'Past 30 days','3M':'Past 3 months','6M':'Past 6 months','YTD':`Year to date ${y}`,'Q1':`Q1 ${y}`,'Q2':`Q2 ${y}`,'Q3':`Q3 ${y}`,'Q4':`Q4 ${y}`}[p]||p;}
+
+function renderAll(){
+  filteredPOs=allPOs.filter(po=>{const{start,end}=getPeriodDates(currentPeriod),d=new Date(po.createdDate);return d>=start&&d<=end;});
+  document.getElementById('dept-period').textContent=getPeriodLabel(currentPeriod);
+  document.getElementById('vendor-period').textContent=getPeriodLabel(currentPeriod);
+  populateFilterDropdowns();renderHero();renderChart();renderKPIs();renderDeptChart();renderVendors();applyFilters();
+}
+
+function renderHero(){
+  const t=filteredPOs.reduce((s,p)=>s+p.grandTotal,0);
+  document.getElementById('hero-amount').textContent=fmt(t);
+  document.getElementById('hero-change').textContent=`${filteredPOs.length} purchase order${filteredPOs.length!==1?'s':''}`;
+  document.getElementById('hero-period-label').textContent=getPeriodLabel(currentPeriod);
+}
+
+function renderChart(){
+  const canvas=document.getElementById('spending-chart'),ctx=canvas.getContext('2d');
+  const{start,end}=getPeriodDates(currentPeriod);
+  const days=[];const d=new Date(start);while(d<=end){days.push(new Date(d));d.setDate(d.getDate()+1);}
+  const sorted=[...filteredPOs].sort((a,b)=>new Date(a.createdDate)-new Date(b.createdDate));
+  let run=0;const labels=[],values=[];
+  days.forEach(day=>{
+    const de=new Date(day);de.setHours(23,59,59,999);
+    sorted.forEach(p=>{const pd=new Date(p.createdDate);if(pd>=day&&pd<=de)run+=p.grandTotal;});
+    labels.push(new Date(day).toLocaleDateString('en-US',{month:'short',day:'numeric'}));values.push(run);
+  });
+  if(spendingChart)spendingChart.destroy();
+  const grad=ctx.createLinearGradient(0,0,0,240);grad.addColorStop(0,'rgba(19,78,47,0.22)');grad.addColorStop(1,'rgba(19,78,47,0)');
+  const step=Math.max(1,Math.floor(labels.length/8));
+  spendingChart=new Chart(ctx,{type:'line',data:{labels:labels.map((l,i)=>i%step===0?l:''),datasets:[{data:values,borderColor:'#134e2f',borderWidth:2.5,backgroundColor:grad,fill:true,tension:0.4,pointRadius:0,pointHoverRadius:5,pointHoverBackgroundColor:'#134e2f',pointHoverBorderColor:'#fff',pointHoverBorderWidth:2.5}]},options:{responsive:true,maintainAspectRatio:false,animation:{duration:800,easing:'easeInOutQuart'},interaction:{mode:'index',intersect:false},plugins:{legend:{display:false},tooltip:{backgroundColor:'#1f2937',titleColor:'#9ca3af',bodyColor:'#fff',padding:12,cornerRadius:8,callbacks:{title:items=>labels[items[0].dataIndex],label:item=>'  Cumulative: '+fmt(item.raw)}}},scales:{x:{grid:{display:false},border:{display:false},ticks:{maxRotation:0,font:{family:"'Plus Jakarta Sans',sans-serif",size:11},color:'#9ca3af'}},y:{position:'right',grid:{color:'rgba(0,0,0,0.04)'},border:{display:false},ticks:{maxTicksLimit:5,font:{family:"'Plus Jakarta Sans',sans-serif",size:11},color:'#9ca3af',callback:v=>v>=1000?'$'+(v/1000).toFixed(0)+'k':'$'+v}}}}});
+}
+
+function renderKPIs(){
+  const t=filteredPOs.reduce((s,p)=>s+p.grandTotal,0);
+  document.getElementById('kpi-total').textContent=fmt(t);
+  document.getElementById('kpi-submitted').textContent=filteredPOs.length;
+  document.getElementById('kpi-approved').textContent=filteredPOs.filter(p=>p.approved).length;
+  document.getElementById('kpi-pending').textContent=filteredPOs.filter(p=>!p.approved).length;
+}
+
+function renderDeptChart(){
+  const map={};filteredPOs.forEach(p=>{const d=p.department||'Unknown';map[d]=(map[d]||0)+p.grandTotal;});
+  const sorted=Object.entries(map).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  const canvas=document.getElementById('dept-chart');
+  if(deptChart)deptChart.destroy();
+  if(!sorted.length){canvas.style.display='none';return;}canvas.style.display='block';
+  deptChart=new Chart(canvas,{type:'bar',data:{labels:sorted.map(([k])=>k.length>22?k.slice(0,20)+'\u2026':k),datasets:[{data:sorted.map(([,v])=>v),backgroundColor:sorted.map((_,i)=>i===0?'#134e2f':`rgba(19,78,47,${0.75-i*0.07})`),borderRadius:4,borderSkipped:false}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,animation:{duration:700},plugins:{legend:{display:false},tooltip:{backgroundColor:'#1f2937',callbacks:{label:item=>' '+fmt(item.raw)}}},scales:{x:{grid:{color:'rgba(0,0,0,0.04)'},border:{display:false},ticks:{font:{family:"'Plus Jakarta Sans',sans-serif",size:11},color:'#9ca3af',callback:v=>'$'+(v/1000).toFixed(0)+'k'}},y:{grid:{display:false},border:{display:false},ticks:{font:{family:"'Plus Jakarta Sans',sans-serif",size:12},color:'#374151'}}}}});
+}
+
+function renderVendors(){
+  const map={};filteredPOs.forEach(p=>{const v=p.vendor||'Unknown';map[v]=(map[v]||0)+p.grandTotal;});
+  const sorted=Object.entries(map).sort((a,b)=>b[1]-a[1]).slice(0,6);
+  const el=document.getElementById('vendor-list');
+  if(!sorted.length){el.innerHTML='<div style="font-size:13px;color:var(--gray-400);padding:8px 0;">No data for this period</div>';return;}
+  const max=sorted[0][1];
+  el.innerHTML=sorted.map(([n,a],i)=>`<div class="vendor-row"><div class="vendor-rank">${i+1}</div><div class="vendor-name" title="${n}">${n}</div><div class="vendor-bar-wrap"><div class="vendor-bar" style="width:${(a/max*100).toFixed(1)}%"></div></div><div class="vendor-amount">${fmt(a)}</div></div>`).join('');
+}
+
+function populateFilterDropdowns(){
+  const depts=[...new Set(filteredPOs.map(p=>p.department).filter(Boolean))].sort();
+  const people=[...new Set(filteredPOs.map(p=>p.requestedBy).filter(Boolean))].sort();
+  const ds=document.getElementById('filter-dept'),ps=document.getElementById('filter-person');
+  const cd=ds.value,cp=ps.value;
+  ds.innerHTML='<option value="">All Departments</option>'+depts.map(d=>`<option value="${d}">${d}</option>`).join('');
+  ps.innerHTML='<option value="">All Requesters</option>'+people.map(p=>`<option value="${p}">${p}</option>`).join('');
+  if(depts.includes(cd))ds.value=cd;if(people.includes(cp))ps.value=cp;
+}
+
+function applyFilters(){
+  filterDept=document.getElementById('filter-dept').value;
+  filterPerson=document.getElementById('filter-person').value;
+  filterStatus=document.getElementById('filter-status').value;
+  searchQuery=document.getElementById('po-search').value.toLowerCase();
+  document.getElementById('filter-dept').classList.toggle('active',!!filterDept);
+  document.getElementById('filter-person').classList.toggle('active',!!filterPerson);
+  document.getElementById('filter-status').classList.toggle('active',!!filterStatus);
+  displayedPOs=filteredPOs.filter(p=>{
+    if(filterDept&&p.department!==filterDept)return false;
+    if(filterPerson&&p.requestedBy!==filterPerson)return false;
+    if(filterStatus==='approved'&&!p.approved)return false;
+    if(filterStatus==='pending'&&p.approved)return false;
+    if(searchQuery){const h=[p.title,p.vendor,p.requestedBy,p.department,p.description].join(' ').toLowerCase();if(!h.includes(searchQuery))return false;}
+    return true;
+  });
+  document.getElementById('filter-count').textContent=`${displayedPOs.length} of ${filteredPOs.length} POs`;
+  renderPOTable();
+}
+
+function clearFilters(){
+  document.getElementById('filter-dept').value='';document.getElementById('filter-person').value='';
+  document.getElementById('filter-status').value='';document.getElementById('po-search').value='';
+  applyFilters();
+}
+
+function renderPOTable(){
+  const tbody=document.getElementById('po-tbody');
+  if(!displayedPOs.length){tbody.innerHTML='<tr><td colspan="7" style="text-align:center;padding:32px;color:var(--gray-400);">No purchase orders match your filters</td></tr>';return;}
+  const sorted=[...displayedPOs].sort((a,b)=>new Date(b.createdDate)-new Date(a.createdDate));
+  tbody.innerHTML=sorted.map(p=>`<tr onclick='openModal(${JSON.stringify(p).replace(/'/g,"&#39;").replace(/\//g,"\\/")})'><td><span class="po-num">${p.title||'\u2014'}</span></td><td style="font-weight:500;">${p.requestedBy||'\u2014'}</td><td><span class="po-dept">${p.department||'\u2014'}</span></td><td style="max-width:130px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${p.vendor||'\u2014'}</td><td style="color:var(--gray-500);font-size:12px;white-space:nowrap;">${fmtShort(p.createdDate)}</td><td class="po-amount">${fmt(p.grandTotal)}</td><td>${badge(p.approved)}</td></tr>`).join('');
+}
+
+function badge(a){return a?'<span class="status-badge approved">&#10003; Approved</span>':'<span class="status-badge pending">&#9203; Pending</span>';}
+
+function openModal(po){
+  if(typeof po==='string')po=JSON.parse(po);
+  currentModalPO=po;
+  document.getElementById('m-po-num').textContent=po.title||'\u2014';
+  document.getElementById('m-requester').textContent='Submitted by '+(po.requestedBy||'\u2014');
+  document.getElementById('m-date-req').textContent=po.dateOfReq||'\u2014';
+  document.getElementById('m-date-needed').textContent=po.dateNeeded||'\u2014';
+  document.getElementById('m-dept').textContent=po.department||'\u2014';
+  document.getElementById('m-account').textContent=po.account||'\u2014';
+  document.getElementById('m-status').innerHTML=badge(po.approved);
+  document.getElementById('m-vendor').textContent=po.vendor||'\u2014';
+  document.getElementById('m-quote').textContent=po.quoteNum||'\u2014';
+  document.getElementById('m-address').textContent=[po.vendorAddress,po.cityStateZip].filter(Boolean).join(', ')||'\u2014';
+  document.getElementById('m-terms').textContent=po.terms||'\u2014';
+  document.getElementById('m-desc').textContent=po.description||'\u2014';
+  document.getElementById('m-subtotal').textContent=fmt(po.subtotal);
+  document.getElementById('m-shipping').textContent=fmt(po.shipping);
+  document.getElementById('m-additional').textContent=fmt(po.additional);
+  document.getElementById('m-total').textContent=fmt(po.grandTotal);
+  renderApprovalSection(po);
+  document.getElementById('po-modal').classList.add('open');
+  document.body.style.overflow='hidden';
+  loadAttachment(po.id);
+}
+
+function closeModal(){document.getElementById('po-modal').classList.remove('open');document.body.style.overflow='';currentModalPO=null;}
+function handleModalClick(e){if(e.target===document.getElementById('po-modal'))closeModal();}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
+
+let cachedSiteId=null;
+async function getSiteId(token){
+  if(cachedSiteId)return cachedSiteId;
+  const r=await fetch('https://graph.microsoft.com/v1.0/sites/ilsroyals.sharepoint.com:/sites/ilsforms',{headers:{Authorization:`Bearer ${token}`}});
+  const d=await r.json();cachedSiteId=d.id;return cachedSiteId;
+}
+
+async function loadAttachment(itemId){
+  const area=document.getElementById('attachment-area');
+  area.innerHTML='<div class="attachment-loading"><div class="attachment-spinner"></div><span>Loading attachment\u2026</span></div>';
+  try{
+    const tok=await msalInstance.acquireTokenSilent({...GRAPH_REQUEST,account:currentAccount});
+    const siteId=await getSiteId(tok.accessToken);
+    const res=await fetch(`https://graph.microsoft.com/v1.0/sites/${siteId}/lists/9616e550-b144-445a-8659-3f362d489cf4/items/${itemId}/attachments`,{headers:{Authorization:`Bearer ${tok.accessToken}`}});
+    if(!res.ok)throw new Error('Graph '+res.status);
+    const data=await res.json();
+    const atts=data.value||[];
+    if(!atts.length){area.innerHTML='<p class="no-attachment">\uD83D\uDCED No supporting document attached to this PO.</p>';return;}
+    area.innerHTML=atts.map(a=>`<div class="attachment-box"><div class="attachment-icon">\uD83D\uDCC4</div><div class="attachment-info"><div class="attachment-name">${a.name}</div><div class="attachment-sub">Click to view or download</div></div><button class="btn-view-doc" onclick="viewAttachment('${itemId}','${encodeURIComponent(a.name)}',this)">View / Download</button></div>`).join('');
+  }catch(err){
+    console.error(err);
+    area.innerHTML='<p class="no-attachment">\u26A0 Could not load attachment.</p>';
+  }
+}
+
+async function viewAttachment(itemId,encodedName,btn){
+  const name=decodeURIComponent(encodedName);
+  const orig=btn.textContent;
+  btn.disabled=true;btn.textContent='Loading\u2026';
+  try{
+    const tok=await msalInstance.acquireTokenSilent({...GRAPH_REQUEST,account:currentAccount});
+    const siteId=await getSiteId(tok.accessToken);
+    const res=await fetch(`https://graph.microsoft.com/v1.0/sites/${siteId}/lists/9616e550-b144-445a-8659-3f362d489cf4/items/${itemId}/attachments/${encodedName}/$value`,{headers:{Authorization:`Bearer ${tok.accessToken}`}});
     if(!res.ok)throw new Error('Download failed: '+res.status);
-    const blob=await res.blob();const url=URL.createObjectURL(blob);
+    const blob=await res.blob();
+    const url=URL.createObjectURL(blob);
     const ext=name.split('.').pop().toLowerCase();
-    if(ext==='pdf'){window.open(url,'_blank');}else{const a=document.createElement('a');a.href=url;a.download=name;a.click();}
+    if(ext==='pdf'){window.open(url,'_blank');}
+    else{const a=document.createElement('a');a.href=url;a.download=name;a.click();}
     setTimeout(()=>URL.revokeObjectURL(url),30000);
     btn.textContent=orig;btn.disabled=false;
-  }catch(err){console.error(err);btn.textContent=orig;btn.disabled=false;alert('Could not download. Please try again.');}
+  }catch(err){
+    console.error(err);
+    btn.textContent=orig;btn.disabled=false;
+    alert('Could not download attachment. Please try again.');
+  }
 }
+
+function renderApprovalSection(po){
+  const s=document.getElementById('approval-section');
+  if(po.approved){
+    s.innerHTML='<div class="modal-section-title">Approval Status</div><div class="approved-banner"><span style="font-size:20px;">\u2705</span><span>This purchase order has been approved.</span></div>';
+    return;
+  }
+  s.innerHTML=`
+    <div class="modal-section-title">Take Action</div>
+    <div class="approval-box">
+      <div class="approval-box-header">
+        <div class="approval-box-title">Review this Purchase Order</div>
+        <div class="approval-box-sub">Add optional notes for approval, or a required reason for rejection</div>
+      </div>
+      <div class="approval-box-body">
+        <label class="approval-comments-label">Comments / Notes</label>
+        <textarea class="approval-comments" id="approval-comments" placeholder="Add notes here\u2026 (required for rejection)"></textarea>
+        <div class="approval-btns">
+          <button class="btn-approve" id="btn-approve" onclick="submitDecision('approve')">
+            <div class="btn-spinner" id="approve-spinner"></div>
+            <span class="btn-label">\u2713 Approve PO</span>
+          </button>
+          <button class="btn-reject" id="btn-reject" onclick="submitDecision('reject')">
+            <div class="btn-spinner" id="reject-spinner" style="border-color:rgba(220,38,38,.4);border-top-color:var(--red);"></div>
+            <span class="btn-label">\u2717 Reject PO</span>
+          </button>
+        </div>
+        <div id="approval-result"></div>
+      </div>
+    </div>`;
+}
+
+async function submitDecision(decision){
+  const comments=(document.getElementById('approval-comments')?.value||'').trim();
+  if(decision==='reject'&&!comments){
+    const ta=document.getElementById('approval-comments');
+    ta.style.borderColor='var(--red)';ta.placeholder='\u26A0 A reason is required for rejection';ta.focus();return;
+  }
+  const btnA=document.getElementById('btn-approve'),btnR=document.getElementById('btn-reject');
+  const sp=document.getElementById(decision==='approve'?'approve-spinner':'reject-spinner');
+  btnA.disabled=true;btnR.disabled=true;sp.style.display='block';
+  const resultEl=document.getElementById('approval-result');
+
+  // Look up submitter email via Graph API using display name
+  let submitterEmail='';
+  try{
+    const sTok=await msalInstance.acquireTokenSilent({...GRAPH_REQUEST,account:currentAccount});
+    const sRes=await fetch(`https://graph.microsoft.com/v1.0/users?$filter=displayName eq '${encodeURIComponent(currentModalPO.requestedBy)}'&$select=mail`,{headers:{Authorization:`Bearer ${sTok.accessToken}`}});
+    const sData=await sRes.json();
+    submitterEmail=sData.value?.[0]?.mail||'';
+  }catch(e){submitterEmail='';}
+
+  const payload={
+    sharePointItemId:currentModalPO.id,
+    poNumber:currentModalPO.title,
+    decision,
+    comments,
+    approverEmail:currentAccount.username,
+    approverName:currentAccount.name||currentAccount.username,
+    requestedBy:currentModalPO.requestedBy,
+    submitterEmail,
+    vendor:currentModalPO.vendor,
+    department:currentModalPO.department,
+    grandTotal:currentModalPO.grandTotal
+  };
+
+  try{
+    const res=await fetch(APPROVAL_FLOW_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    if(!res.ok)throw new Error('Flow error '+res.status);
+    if(decision==='approve')await patchSharePoint(currentModalPO.id,true);
+    const po=allPOs.find(p=>p.id===currentModalPO.id);
+    if(po)po.approved=decision==='approve';
+    currentModalPO.approved=decision==='approve';
+    resultEl.innerHTML=`<div class="approval-result success"><div class="approval-result-icon">${decision==='approve'?'\u2705':'\uD83D\uDCCB'}</div><div class="approval-result-text"><strong>${decision==='approve'?'PO Approved':'PO Rejected'}</strong>${decision==='approve'?'The PO has been approved and a signed PDF will be emailed to the requester.':'The rejection has been recorded and the requester will be notified.'}</div></div>`;
+    btnA.style.display='none';btnR.style.display='none';
+    document.getElementById('approval-comments').style.display='none';
+    document.querySelector('.approval-comments-label').style.display='none';
+    document.getElementById('m-status').innerHTML=badge(currentModalPO.approved);
+    renderKPIs();applyFilters();
+  }catch(err){
+    console.error(err);
+    resultEl.innerHTML='<div class="approval-result error"><div class="approval-result-icon">\u26A0</div><div class="approval-result-text"><strong>Action Failed</strong>Could not process the decision. Please try again.</div></div>';
+    btnA.disabled=false;btnR.disabled=false;sp.style.display='none';
+  }
+}
+
+async function patchSharePoint(itemId,approved){
+  const tok=await msalInstance.acquireTokenSilent({...GRAPH_REQUEST,account:currentAccount});
+  await fetch(`${SP_BASE}/items/${itemId}`,{method:'PATCH',headers:{Authorization:`Bearer ${tok.accessToken}`,'Content-Type':'application/json'},body:JSON.stringify({fields:{Approved:approved}})});
+}
+
+function setPeriod(p){
+  currentPeriod=p;
+  document.querySelectorAll('.period-tab').forEach(b=>b.classList.toggle('active',b.textContent===p));
+  filterDept='';filterPerson='';filterStatus='';searchQuery='';
+  renderAll();
+}
+
+function exportCSV(){
+  const h=['PO Number','Requested By','Department','Financial Account','Vendor','Date Submitted','Date Required','Subtotal','Shipping','Additional','Grand Total','Status'];
+  const rows=displayedPOs.map(p=>[p.title,p.requestedBy,p.department,p.account,p.vendor,fmtShort(p.createdDate),p.dateNeeded,p.subtotal.toFixed(2),p.shipping.toFixed(2),p.additional.toFixed(2),p.grandTotal.toFixed(2),p.approved?'Approved':'Pending']);
+  const csv=[h,...rows].map(r=>r.map(c=>`"${(c||'').toString().replace(/"/g,'""')}"`).join(',')).join('\n');
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download=`ILS_PO_${currentPeriod}_${new Date().toISOString().slice(0,10)}.csv`;a.click();
+}
+
+function fmt(n){return'$'+(parseFloat(n)||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
+function fmtShort(s){if(!s)return'\u2014';return new Date(s).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});}
+
+initAuth();
+</script>
+</body>
+</html>
