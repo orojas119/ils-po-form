@@ -599,17 +599,37 @@ async function loadAttachment(itemId){
     const data=await res.json();
     const atts=data.value||[];
     if(!atts.length){area.innerHTML='<p class="no-attachment">\uD83D\uDCED No supporting document attached to this PO.</p>';return;}
-    area.innerHTML=atts.map(a=>`<div class="attachment-box"><div class="attachment-icon">\uD83D\uDCC4</div><div class="attachment-info"><div class="attachment-name">${a.name}</div><div class="attachment-sub">Supporting document</div></div><button class="btn-view-doc" onclick="viewDoc('${encodeURIComponent(a.contentUrl||'')}')">View / Download</button></div>`).join('');
+    area.innerHTML=atts.map(a=>`<div class="attachment-box"><div class="attachment-icon">\uD83D\uDCC4</div><div class="attachment-info"><div class="attachment-name">${a.name}</div><div class="attachment-sub">Click to view or download</div></div><button class="btn-view-doc" id="att-btn-${encodeURIComponent(a.name)}" onclick="viewAttachment('${itemId}','${encodeURIComponent(a.name)}',this)">View / Download</button></div>`).join('');
   }catch(err){
     console.error(err);
-    area.innerHTML='<p class="no-attachment">\u26A0 Could not load attachment. <a href="https://ilsroyals.sharepoint.com/sites/ilsforms/Lists/Purchase%20Order%20List" target="_blank" style="color:var(--green);font-weight:600;">View in SharePoint \u2192</a></p>';
+    area.innerHTML='<p class="no-attachment">\u26A0 Could not load attachment.</p>';
   }
 }
 
-function viewDoc(encoded){
-  const url=decodeURIComponent(encoded);
-  if(url)window.open(url,'_blank');
-  else window.open('https://ilsroyals.sharepoint.com/sites/ilsforms/Lists/Purchase%20Order%20List','_blank');
+async function viewAttachment(itemId,encodedName,btn){
+  const name=decodeURIComponent(encodedName);
+  const orig=btn.textContent;
+  btn.disabled=true;btn.textContent='Loading\u2026';
+  try{
+    const tok=await msalInstance.acquireTokenSilent({...GRAPH_REQUEST,account:currentAccount});
+    const res=await fetch(`${SP_BASE}/items/${itemId}/attachments/${encodedName}/$value`,{headers:{Authorization:`Bearer ${tok.accessToken}`}});
+    if(!res.ok)throw new Error('Download failed: '+res.status);
+    const blob=await res.blob();
+    const ext=name.split('.').pop().toLowerCase();
+    const isPDF=ext==='pdf';
+    const url=URL.createObjectURL(blob);
+    if(isPDF){
+      window.open(url,'_blank');
+    }else{
+      const a=document.createElement('a');a.href=url;a.download=name;a.click();
+    }
+    setTimeout(()=>URL.revokeObjectURL(url),30000);
+    btn.textContent=orig;btn.disabled=false;
+  }catch(err){
+    console.error(err);
+    btn.textContent=orig;btn.disabled=false;
+    alert('Could not load attachment. Please try again.');
+  }
 }
 
 function renderApprovalSection(po){
