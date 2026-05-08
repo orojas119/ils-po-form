@@ -590,32 +590,39 @@ function closeModal(){document.getElementById('po-modal').classList.remove('open
 function handleModalClick(e){if(e.target===document.getElementById('po-modal'))closeModal();}
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
 
+let cachedSiteId=null;
+async function getSiteId(token){
+  if(cachedSiteId)return cachedSiteId;
+  const r=await fetch('https://graph.microsoft.com/v1.0/sites/ilsroyals.sharepoint.com:/sites/ilsforms',{headers:{Authorization:`Bearer ${token}`}});
+  const d=await r.json();cachedSiteId=d.id;return cachedSiteId;
+}
+
 async function loadAttachment(itemId){
   const area=document.getElementById('attachment-area');
   area.innerHTML='<div class="attachment-loading"><div class="attachment-spinner"></div><span>Loading attachment\u2026</span></div>';
   try{
     const tok=await msalInstance.acquireTokenSilent({...GRAPH_REQUEST,account:currentAccount});
-    const spId=parseInt(itemId)||itemId;
-    const res=await fetch(`https://ilsroyals.sharepoint.com/sites/ilsforms/_api/web/lists(guid'9616e550-b144-445a-8659-3f362d489cf4')/items(${spId})/AttachmentFiles`,{headers:{Authorization:`Bearer ${tok.accessToken}`,Accept:'application/json;odata=nometadata'}});
-    if(!res.ok)throw new Error('SP '+res.status);
+    const siteId=await getSiteId(tok.accessToken);
+    const res=await fetch(`https://graph.microsoft.com/v1.0/sites/${siteId}/lists/9616e550-b144-445a-8659-3f362d489cf4/items/${itemId}/attachments`,{headers:{Authorization:`Bearer ${tok.accessToken}`}});
+    if(!res.ok)throw new Error('Graph '+res.status);
     const data=await res.json();
     const atts=data.value||[];
     if(!atts.length){area.innerHTML='<p class="no-attachment">\uD83D\uDCED No supporting document attached to this PO.</p>';return;}
-    area.innerHTML=atts.map(a=>`<div class="attachment-box"><div class="attachment-icon">\uD83D\uDCC4</div><div class="attachment-info"><div class="attachment-name">${a.FileName}</div><div class="attachment-sub">Click to view or download</div></div><button class="btn-view-doc" onclick="viewAttachment('${encodeURIComponent(a.FileName)}','${encodeURIComponent(a.ServerRelativeUrl)}',this)">View / Download</button></div>`).join('');
+    area.innerHTML=atts.map(a=>`<div class="attachment-box"><div class="attachment-icon">\uD83D\uDCC4</div><div class="attachment-info"><div class="attachment-name">${a.name}</div><div class="attachment-sub">Click to view or download</div></div><button class="btn-view-doc" onclick="viewAttachment('${itemId}','${encodeURIComponent(a.name)}',this)">View / Download</button></div>`).join('');
   }catch(err){
     console.error(err);
     area.innerHTML='<p class="no-attachment">\u26A0 Could not load attachment.</p>';
   }
 }
 
-async function viewAttachment(encodedName,encodedUrl,btn){
+async function viewAttachment(itemId,encodedName,btn){
   const name=decodeURIComponent(encodedName);
-  const serverUrl=decodeURIComponent(encodedUrl);
   const orig=btn.textContent;
   btn.disabled=true;btn.textContent='Loading\u2026';
   try{
     const tok=await msalInstance.acquireTokenSilent({...GRAPH_REQUEST,account:currentAccount});
-    const res=await fetch(`https://ilsroyals.sharepoint.com/sites/ilsforms/_api/web/GetFileByServerRelativeUrl('${serverUrl}')/$value`,{headers:{Authorization:`Bearer ${tok.accessToken}`}});
+    const siteId=await getSiteId(tok.accessToken);
+    const res=await fetch(`https://graph.microsoft.com/v1.0/sites/${siteId}/lists/9616e550-b144-445a-8659-3f362d489cf4/items/${itemId}/attachments/${encodedName}/$value`,{headers:{Authorization:`Bearer ${tok.accessToken}`}});
     if(!res.ok)throw new Error('Download failed: '+res.status);
     const blob=await res.blob();
     const url=URL.createObjectURL(blob);
